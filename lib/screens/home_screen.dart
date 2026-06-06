@@ -2,6 +2,7 @@
 import '../theme/app_theme.dart';
 import '../data/question_data.dart';
 import 'quiz_screen.dart';
+import 'exam_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -13,10 +14,7 @@ class HomeScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text('G1 Ready'),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.settings),
-            onPressed: () {},
-          ),
+          IconButton(icon: const Icon(Icons.settings), onPressed: () {}),
         ],
       ),
       body: SafeArea(
@@ -37,7 +35,7 @@ class HomeScreen extends StatelessWidget {
               const SizedBox(height: 24),
               _buildSectionTitle('Exam Mode'),
               const SizedBox(height: 12),
-              _buildExamModeCard(),
+              _buildExamModeCard(context),
             ],
           ),
         ),
@@ -139,14 +137,14 @@ class HomeScreen extends StatelessWidget {
 
   Widget _buildQuickStartGrid(BuildContext context) {
     final sets = [
-      {'title': 'Set 1', 'topic': 'Road Signs', 'questions': QuestionData.set1},
-      {'title': 'Set 2', 'topic': 'Traffic Laws', 'questions': QuestionData.set1},
-      {'title': 'Set 3', 'topic': 'Right of Way', 'questions': QuestionData.set1},
-      {'title': 'Set 4', 'topic': 'Speed Limits', 'questions': QuestionData.set1},
-      {'title': 'Set 5', 'topic': 'Parking Rules', 'questions': QuestionData.set1},
-      {'title': 'Set 6', 'topic': 'Alcohol & Drugs', 'questions': QuestionData.set1},
-      {'title': 'Set 7', 'topic': 'Winter Driving', 'questions': QuestionData.set1},
-      {'title': 'Set 8', 'topic': 'Mixed Review', 'questions': QuestionData.set1},
+      {'title': 'Set 1', 'topic': 'Road Signs',      'questions': QuestionData.set1},
+      {'title': 'Set 2', 'topic': 'Traffic Laws',    'questions': QuestionData.set2},
+      {'title': 'Set 3', 'topic': 'Right of Way',    'questions': QuestionData.set3},
+      {'title': 'Set 4', 'topic': 'Speed Limits',    'questions': QuestionData.set4},
+      {'title': 'Set 5', 'topic': 'Parking Rules',   'questions': QuestionData.set5},
+      {'title': 'Set 6', 'topic': 'Alcohol & Drugs', 'questions': QuestionData.set6},
+      {'title': 'Set 7', 'topic': 'Winter Driving',  'questions': QuestionData.set7},
+      {'title': 'Set 8', 'topic': 'Mixed Review',    'questions': QuestionData.set8},
     ];
     return GridView.builder(
       shrinkWrap: true,
@@ -201,32 +199,38 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildExamModeCard() {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(color: AppTheme.darkGrey, borderRadius: BorderRadius.circular(16)),
-      child: Row(
-        children: [
-          const Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('Exam Simulation',
-                    style: TextStyle(color: AppTheme.white, fontSize: 18, fontWeight: FontWeight.bold)),
-                SizedBox(height: 4),
-                Text('40 questions - 50 minutes\nPass mark: 80%',
-                    style: TextStyle(color: AppTheme.mediumGrey, fontSize: 13)),
-              ],
+  Widget _buildExamModeCard(BuildContext context) {
+    return GestureDetector(
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => const ExamScreen()),
+      ),
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(color: AppTheme.darkGrey, borderRadius: BorderRadius.circular(16)),
+        child: Row(
+          children: [
+            const Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Exam Simulation',
+                      style: TextStyle(color: AppTheme.white, fontSize: 18, fontWeight: FontWeight.bold)),
+                  SizedBox(height: 4),
+                  Text('40 questions - 50 minutes\nPass mark: 80%',
+                      style: TextStyle(color: AppTheme.mediumGrey, fontSize: 13)),
+                ],
+              ),
             ),
-          ),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-            decoration: BoxDecoration(color: AppTheme.canadianRed, borderRadius: BorderRadius.circular(10)),
-            child: const Text('Start',
-                style: TextStyle(color: AppTheme.white, fontWeight: FontWeight.bold)),
-          ),
-        ],
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+              decoration: BoxDecoration(color: AppTheme.canadianRed, borderRadius: BorderRadius.circular(10)),
+              child: const Text('Start',
+                  style: TextStyle(color: AppTheme.white, fontWeight: FontWeight.bold)),
+            ),
+          ],
+        ),
       ),
     );
   }
