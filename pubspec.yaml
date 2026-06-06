@@ -1,4 +1,4 @@
-name: g1_ready
+﻿name: g1_ready
 description: Ontario G1 Driver's Test Prep App
 publish_to: 'none'
 version: 1.0.0+1
@@ -9,31 +9,21 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  
-  # State Management
   provider: ^6.1.2
-  
-  # Navigation
   go_router: ^14.0.0
-  
-  # Local Storage
   shared_preferences: ^2.3.2
-  
-  # Audio
   flutter_tts: ^4.0.2
-  
-  # UI
   flutter_svg: ^2.0.10+1
   lottie: ^3.1.2
   google_fonts: ^6.2.1
-  
-  # Utilities
   uuid: ^4.4.2
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^4.0.0
+  flutter_launcher_icons: ^0.13.1
+  flutter_native_splash: ^2.3.9
 
 flutter:
   uses-material-design: true
@@ -41,4 +31,17 @@ flutter:
     - assets/images/
     - assets/audio/
     - assets/animations/
-    
+
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: false
+  image_path: "assets/images/icon.png"
+  min_sdk_android: 21
+  adaptive_icon_background: "#D52B1E"
+  adaptive_icon_foreground: "assets/images/icon.png"
+
+flutter_native_splash:
+  color: "#D52B1E"
+  android: true
+  ios: false
+  fullscreen: false

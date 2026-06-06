@@ -51,9 +51,11 @@ class _QuizScreenState extends State<QuizScreen> {
 
   Future<void> _nextQuestion() async {
     if (_isLastQuestion) {
-      await StorageService.saveScore(widget.setId, _score, widget.questions.length);
+      await StorageService.saveScore(
+          widget.setId, _score, widget.questions.length);
       await StorageService.incrementQuizzes();
       await StorageService.addXP(_score * 10);
+      await StorageService.addQuestionsAnswered(widget.questions.length);
       _showResults();
       return;
     }
@@ -133,7 +135,8 @@ class _QuizScreenState extends State<QuizScreen> {
                     children: [
                       Text(
                         'Question ${_currentIndex + 1} of ${widget.questions.length}',
-                        style: const TextStyle(fontSize: 13, color: AppTheme.mediumGrey),
+                        style: const TextStyle(
+                            fontSize: 13, color: AppTheme.mediumGrey),
                       ),
                       Text(
                         'Score: $_score',
@@ -152,7 +155,8 @@ class _QuizScreenState extends State<QuizScreen> {
                       value: progress,
                       minHeight: 8,
                       backgroundColor: AppTheme.lightGrey,
-                      valueColor: const AlwaysStoppedAnimation(AppTheme.canadianRed),
+                      valueColor:
+                          const AlwaysStoppedAnimation(AppTheme.canadianRed),
                     ),
                   ),
                 ],
@@ -195,7 +199,8 @@ class _QuizScreenState extends State<QuizScreen> {
                               color: _getOptionColor(index),
                               borderRadius: BorderRadius.circular(12),
                               border: Border.all(
-                                color: _answered && index == _currentQuestion.correctIndex
+                                color: _answered &&
+                                        index == _currentQuestion.correctIndex
                                     ? AppTheme.correct
                                     : _answered && index == _selectedAnswer
                                         ? AppTheme.incorrect
@@ -211,7 +216,9 @@ class _QuizScreenState extends State<QuizScreen> {
                                   decoration: BoxDecoration(
                                     shape: BoxShape.circle,
                                     color: _answered &&
-                                            (index == _currentQuestion.correctIndex ||
+                                            (index ==
+                                                    _currentQuestion
+                                                        .correctIndex ||
                                                 index == _selectedAnswer)
                                         ? Colors.white24
                                         : AppTheme.lightGrey,
@@ -238,12 +245,15 @@ class _QuizScreenState extends State<QuizScreen> {
                                     ),
                                   ),
                                 ),
-                                if (_answered && index == _currentQuestion.correctIndex)
-                                  const Icon(Icons.check_circle, color: AppTheme.white, size: 20),
+                                if (_answered &&
+                                    index == _currentQuestion.correctIndex)
+                                  const Icon(Icons.check_circle,
+                                      color: AppTheme.white, size: 20),
                                 if (_answered &&
                                     index == _selectedAnswer &&
                                     index != _currentQuestion.correctIndex)
-                                  const Icon(Icons.cancel, color: AppTheme.white, size: 20),
+                                  const Icon(Icons.cancel,
+                                      color: AppTheme.white, size: 20),
                               ],
                             ),
                           ),
@@ -261,12 +271,14 @@ class _QuizScreenState extends State<QuizScreen> {
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Icon(Icons.lightbulb, color: AppTheme.warning, size: 20),
+                            const Icon(Icons.lightbulb,
+                                color: AppTheme.warning, size: 20),
                             const SizedBox(width: 8),
                             Expanded(
                               child: Text(
                                 _currentQuestion.explanation,
-                                style: const TextStyle(fontSize: 14, color: AppTheme.darkGrey),
+                                style: const TextStyle(
+                                    fontSize: 14, color: AppTheme.darkGrey),
                               ),
                             ),
                           ],
@@ -281,7 +293,8 @@ class _QuizScreenState extends State<QuizScreen> {
                 padding: const EdgeInsets.all(20),
                 child: ElevatedButton(
                   onPressed: _nextQuestion,
-                  child: Text(_isLastQuestion ? 'See Results' : 'Next Question'),
+                  child:
+                      Text(_isLastQuestion ? 'See Results' : 'Next Question'),
                 ),
               ),
           ],
@@ -333,7 +346,8 @@ class _ResultScreen extends StatelessWidget {
               ),
               const SizedBox(height: 8),
               Text(setTitle,
-                  style: const TextStyle(fontSize: 16, color: AppTheme.mediumGrey)),
+                  style: const TextStyle(
+                      fontSize: 16, color: AppTheme.mediumGrey)),
               const SizedBox(height: 32),
               Container(
                 padding: const EdgeInsets.all(24),
@@ -353,11 +367,13 @@ class _ResultScreen extends StatelessWidget {
                     ),
                     Text(
                       '${(percentage * 100).toInt()}%',
-                      style: const TextStyle(fontSize: 20, color: AppTheme.white),
+                      style:
+                          const TextStyle(fontSize: 20, color: AppTheme.white),
                     ),
                     const SizedBox(height: 12),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 8),
                       decoration: BoxDecoration(
                         color: Colors.white24,
                         borderRadius: BorderRadius.circular(20),

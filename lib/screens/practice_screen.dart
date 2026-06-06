@@ -13,16 +13,17 @@ class PracticeScreen extends StatefulWidget {
 
 class _PracticeScreenState extends State<PracticeScreen> {
   Map<String, String?> _scores = {};
+  String _sortBy = 'importance';
 
   final List<Map<String, dynamic>> _sets = [
-    {'title': 'Set 1', 'topic': 'Road Signs',      'id': 'set1', 'icon': Icons.traffic,         'questions': QuestionData.set1},
-    {'title': 'Set 2', 'topic': 'Traffic Laws',    'id': 'set2', 'icon': Icons.gavel,            'questions': QuestionData.set2},
-    {'title': 'Set 3', 'topic': 'Right of Way',    'id': 'set3', 'icon': Icons.swap_horiz,       'questions': QuestionData.set3},
-    {'title': 'Set 4', 'topic': 'Speed Limits',    'id': 'set4', 'icon': Icons.speed,            'questions': QuestionData.set4},
-    {'title': 'Set 5', 'topic': 'Parking Rules',   'id': 'set5', 'icon': Icons.local_parking,    'questions': QuestionData.set5},
-    {'title': 'Set 6', 'topic': 'Alcohol & Drugs', 'id': 'set6', 'icon': Icons.no_drinks,        'questions': QuestionData.set6},
-    {'title': 'Set 7', 'topic': 'Winter Driving',  'id': 'set7', 'icon': Icons.ac_unit,          'questions': QuestionData.set7},
-    {'title': 'Set 8', 'topic': 'Mixed Review',    'id': 'set8', 'icon': Icons.quiz,             'questions': QuestionData.set8},
+    {'title': 'Road Signs', 'subtitle': 'Signs, shapes & colors', 'id': 'set1', 'icon': Icons.traffic, 'color': const Color(0xFFD52B1E), 'importance': 1, 'questions': QuestionData.set1, 'tag': 'Most Common'},
+    {'title': 'Traffic Laws', 'subtitle': 'Speed limits & rules', 'id': 'set2', 'icon': Icons.gavel, 'color': const Color(0xFF1565C0), 'importance': 1, 'questions': QuestionData.set2, 'tag': 'Most Common'},
+    {'title': 'Right of Way', 'subtitle': 'Who goes first', 'id': 'set3', 'icon': Icons.swap_horiz, 'color': const Color(0xFF6A1B9A), 'importance': 1, 'questions': QuestionData.set3, 'tag': 'Most Common'},
+    {'title': 'Alcohol & Drugs', 'subtitle': 'BAC limits & penalties', 'id': 'set6', 'icon': Icons.no_drinks, 'color': const Color(0xFFE65100), 'importance': 1, 'questions': QuestionData.set6, 'tag': 'Most Common'},
+    {'title': 'Speed & Space', 'subtitle': 'Following distance', 'id': 'set4', 'icon': Icons.speed, 'color': const Color(0xFF00695C), 'importance': 2, 'questions': QuestionData.set4, 'tag': 'Common'},
+    {'title': 'Parking Rules', 'subtitle': 'Where & how to park', 'id': 'set5', 'icon': Icons.local_parking, 'color': const Color(0xFF283593), 'importance': 2, 'questions': QuestionData.set5, 'tag': 'Common'},
+    {'title': 'Winter Driving', 'subtitle': 'Ice, snow & fog', 'id': 'set7', 'icon': Icons.ac_unit, 'color': const Color(0xFF0277BD), 'importance': 2, 'questions': QuestionData.set7, 'tag': 'Common'},
+    {'title': 'Mixed Review', 'subtitle': 'All topics combined', 'id': 'set8', 'icon': Icons.quiz, 'color': const Color(0xFF4E342E), 'importance': 3, 'questions': QuestionData.set8, 'tag': 'Review'},
   ];
 
   @override
@@ -45,62 +46,104 @@ class _PracticeScreenState extends State<PracticeScreen> {
     setState(() => _scores = scores);
   }
 
-  Color _getScoreColor(String? score) {
-    if (score == null) return AppTheme.lightGrey;
+  List<Map<String, dynamic>> get _sortedSets {
+    final sorted = List<Map<String, dynamic>>.from(_sets);
+    switch (_sortBy) {
+      case 'importance':
+        sorted.sort((a, b) => (a['importance'] as int).compareTo(b['importance'] as int));
+        break;
+      case 'score_low':
+        sorted.sort((a, b) => _getScorePercent(a['id'] as String).compareTo(_getScorePercent(b['id'] as String)));
+        break;
+      case 'score_high':
+        sorted.sort((a, b) => _getScorePercent(b['id'] as String).compareTo(_getScorePercent(a['id'] as String)));
+        break;
+      case 'not_done':
+        sorted.sort((a, b) {
+          final aDone = _scores[a['id']] != null ? 1 : 0;
+          final bDone = _scores[b['id']] != null ? 1 : 0;
+          return aDone.compareTo(bDone);
+        });
+        break;
+    }
+    return sorted;
+  }
+
+  double _getScorePercent(String id) {
+    final score = _scores[id];
+    if (score == null) return 0;
     final parts = score.split('/');
-    final got = int.parse(parts[0]);
-    final total = int.parse(parts[1]);
-    final pct = got / total;
-    if (pct >= 0.8) return AppTheme.correct;
-    if (pct >= 0.5) return AppTheme.warning;
-    return AppTheme.incorrect;
+    return int.parse(parts[0]) / int.parse(parts[1]);
+  }
+
+  // Convert score percentage to 0-5 stars
+  int _getStars(String? score) {
+    if (score == null) return 0;
+    final parts = score.split('/');
+    final pct = int.parse(parts[0]) / int.parse(parts[1]);
+    if (pct >= 0.95) return 5;
+    if (pct >= 0.80) return 4;
+    if (pct >= 0.60) return 3;
+    if (pct >= 0.40) return 2;
+    if (pct > 0) return 1;
+    return 0;
   }
 
   @override
   Widget build(BuildContext context) {
+    final sets = _sortedSets;
     return Scaffold(
       backgroundColor: AppTheme.white,
-      appBar: AppBar(title: const Text('Practice')),
+      appBar: AppBar(
+        title: const Text('Practice Tests'),
+        actions: [
+          PopupMenuButton<String>(
+            icon: const Icon(Icons.sort, color: AppTheme.white),
+            onSelected: (v) => setState(() => _sortBy = v),
+            itemBuilder: (_) => [
+              const PopupMenuItem(value: 'importance', child: Text('By Exam Importance')),
+              const PopupMenuItem(value: 'not_done', child: Text('Not Done First')),
+              const PopupMenuItem(value: 'score_low', child: Text('Weakest First')),
+              const PopupMenuItem(value: 'score_high', child: Text('Strongest First')),
+            ],
+          ),
+        ],
+      ),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(20),
+          padding: const EdgeInsets.all(16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Header
               Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: AppTheme.lightGrey,
-                  borderRadius: BorderRadius.circular(12),
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                decoration: BoxDecoration(color: AppTheme.lightGrey, borderRadius: BorderRadius.circular(8)),
                 child: Row(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Icon(Icons.info_outline, color: AppTheme.canadianRed),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: Text(
-                        'Complete each set to earn XP and unlock badges. Aim for 80%!',
-                        style: const TextStyle(fontSize: 13, color: AppTheme.darkGrey),
-                      ),
+                    const Icon(Icons.sort, size: 14, color: AppTheme.mediumGrey),
+                    const SizedBox(width: 6),
+                    Text(
+                      _sortBy == 'importance' ? 'Sorted by: Exam Importance' :
+                      _sortBy == 'not_done' ? 'Sorted by: Not Done First' :
+                      _sortBy == 'score_low' ? 'Sorted by: Weakest First' : 'Sorted by: Strongest First',
+                      style: const TextStyle(fontSize: 12, color: AppTheme.mediumGrey),
                     ),
                   ],
                 ),
               ),
-              const SizedBox(height: 20),
-              const Text('All Practice Sets',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppTheme.darkGrey)),
-              const SizedBox(height: 12),
-              ListView.builder(
+              const SizedBox(height: 16),
+              GridView.builder(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
-                itemCount: _sets.length,
-                itemBuilder: (context, index) {
-                  final set = _sets[index];
-                  final score = _scores[set['id'] as String];
-                  return _buildSetListCard(context, set, score);
-                },
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  crossAxisSpacing: 12,
+                  mainAxisSpacing: 12,
+                  childAspectRatio: 0.85,
+                ),
+                itemCount: sets.length,
+                itemBuilder: (context, index) => _buildSetCard(context, sets[index]),
               ),
             ],
           ),
@@ -109,8 +152,12 @@ class _PracticeScreenState extends State<PracticeScreen> {
     );
   }
 
-  Widget _buildSetListCard(BuildContext context, Map<String, dynamic> set, String? score) {
-    final scoreColor = _getScoreColor(score);
+  Widget _buildSetCard(BuildContext context, Map<String, dynamic> set) {
+    final score = _scores[set['id'] as String];
+    final stars = _getStars(score);
+    final color = set['color'] as Color;
+    final tag = set['tag'] as String;
+
     return GestureDetector(
       onTap: () async {
         await Navigator.push(
@@ -126,68 +173,76 @@ class _PracticeScreenState extends State<PracticeScreen> {
         _loadScores();
       },
       child: Container(
-        margin: const EdgeInsets.only(bottom: 12),
-        padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: AppTheme.white,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(16),
           border: Border.all(color: AppTheme.lightGrey, width: 1.5),
-          boxShadow: [BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 4,
-            offset: const Offset(0, 2),
-          )],
+          boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.06), blurRadius: 6, offset: const Offset(0, 3))],
         ),
-        child: Row(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Container(
-              width: 48,
-              height: 48,
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
               decoration: BoxDecoration(
-                color: AppTheme.canadianRed.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(12),
+                color: color,
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(14),
+                  topRight: Radius.circular(14),
+                ),
               ),
-              child: Icon(set['icon'] as IconData, color: AppTheme.canadianRed, size: 24),
-            ),
-            const SizedBox(width: 14),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(set['title'] as String,
-                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: AppTheme.darkGrey)),
-                  Text(set['topic'] as String,
-                      style: const TextStyle(fontSize: 12, color: AppTheme.mediumGrey)),
-                  Text('${(set['questions'] as List).length} questions',
-                      style: const TextStyle(fontSize: 11, color: AppTheme.mediumGrey)),
+                  Icon(set['icon'] as IconData, color: AppTheme.white, size: 22),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                    decoration: BoxDecoration(color: Colors.white24, borderRadius: BorderRadius.circular(8)),
+                    child: Text(tag, style: const TextStyle(color: AppTheme.white, fontSize: 9, fontWeight: FontWeight.bold)),
+                  ),
                 ],
               ),
             ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                if (score != null)
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: scoreColor,
-                      borderRadius: BorderRadius.circular(20),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(set['title'] as String,
+                            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: AppTheme.darkGrey)),
+                        const SizedBox(height: 2),
+                        Text(set['subtitle'] as String,
+                            style: const TextStyle(fontSize: 11, color: AppTheme.mediumGrey)),
+                        const SizedBox(height: 4),
+                        Text('${(set['questions'] as List).length} questions',
+                            style: TextStyle(fontSize: 11, color: color, fontWeight: FontWeight.w600)),
+                      ],
                     ),
-                    child: Text(
-                      score,
-                      style: const TextStyle(
-                        color: AppTheme.white,
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                      ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        if (score != null)
+                          Row(
+                            children: List.generate(5, (i) => Icon(
+                              i < stars ? Icons.star : Icons.star_border,
+                              color: i < stars ? AppTheme.gold : AppTheme.mediumGrey,
+                              size: 14,
+                            )),
+                          ),
+                        if (score == null)
+                          const Text('Not started', style: TextStyle(fontSize: 10, color: AppTheme.mediumGrey)),
+                        Icon(Icons.arrow_forward_ios, size: 12, color: color),
+                      ],
                     ),
-                  ),
-                if (score == null)
-                  const Text('Not started',
-                      style: TextStyle(fontSize: 11, color: AppTheme.mediumGrey)),
-                const SizedBox(height: 4),
-                const Icon(Icons.arrow_forward_ios, size: 14, color: AppTheme.mediumGrey),
-              ],
+                  ],
+                ),
+              ),
             ),
           ],
         ),
