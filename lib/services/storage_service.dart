@@ -9,6 +9,7 @@ class StorageService {
   static const _streakKey = 'streak';
   static const _lastOpenKey = 'last_open';
   static const _totalQuestionsKey = 'total_questions';
+  static const _learningModeKey = 'learning_mode';
 
   // XP
   static Future<int> getXP() async {
@@ -151,9 +152,21 @@ class StorageService {
     }
   }
 
+  // Learning Mode
+  static Future<String> getLearningMode() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_learningModeKey) ?? 'exam_focus';
+  }
+
+  static Future<void> setLearningMode(String mode) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_learningModeKey, mode);
+  }
+
   // Clear all
   static Future<void> clearAll() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.clear();
   }
 }
+

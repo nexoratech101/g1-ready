@@ -133,6 +133,7 @@ class _PracticeScreenState extends State<PracticeScreen> {
                 ),
               ),
               const SizedBox(height: 16),
+              const SizedBox(height: 8),
               GridView.builder(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
@@ -250,3 +251,6 @@ class _PracticeScreenState extends State<PracticeScreen> {
     );
   }
 }
+
+
+
