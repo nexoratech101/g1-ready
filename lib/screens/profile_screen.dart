@@ -1,8 +1,67 @@
 ﻿import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
+import '../services/storage_service.dart';
 
-class ProfileScreen extends StatelessWidget {
+class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
+
+  @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
+  int _xp = 0;
+  int _quizzes = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadData();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _loadData();
+  }
+
+  Future<void> _loadData() async {
+    final xp = await StorageService.getXP();
+    final quizzes = await StorageService.getQuizzesCompleted();
+    setState(() {
+      _xp = xp;
+      _quizzes = quizzes;
+    });
+  }
+
+  String get _rankName {
+    if (_xp >= 1000) return 'Expert';
+    if (_xp >= 600) return 'Advanced';
+    if (_xp >= 300) return 'Intermediate';
+    if (_xp >= 100) return 'Learner';
+    return 'Beginner';
+  }
+
+  int get _nextRankXP {
+    if (_xp >= 1000) return 1000;
+    if (_xp >= 600) return 1000;
+    if (_xp >= 300) return 600;
+    if (_xp >= 100) return 300;
+    return 100;
+  }
+
+  int get _currentRankXP {
+    if (_xp >= 1000) return 1000;
+    if (_xp >= 600) return 600;
+    if (_xp >= 300) return 300;
+    if (_xp >= 100) return 100;
+    return 0;
+  }
+
+  double get _rankProgress {
+    if (_xp >= 1000) return 1.0;
+    return (_xp - _currentRankXP) / (_nextRankXP - _currentRankXP);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -68,9 +127,9 @@ class ProfileScreen extends StatelessWidget {
               color: Colors.white24,
               borderRadius: BorderRadius.circular(20),
             ),
-            child: const Text(
-              '🏆 Beginner',
-              style: TextStyle(
+            child: Text(
+              '🏆 $_rankName',
+              style: const TextStyle(
                 color: AppTheme.white,
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
@@ -103,9 +162,9 @@ class ProfileScreen extends StatelessWidget {
                   color: AppTheme.darkGrey,
                 ),
               ),
-              const Text(
-                '0 / 100 XP',
-                style: TextStyle(
+              Text(
+                '$_xp / $_nextRankXP XP',
+                style: const TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
                   color: AppTheme.canadianRed,
@@ -117,16 +176,18 @@ class ProfileScreen extends StatelessWidget {
           ClipRRect(
             borderRadius: BorderRadius.circular(8),
             child: LinearProgressIndicator(
-              value: 0,
+              value: _rankProgress,
               minHeight: 12,
               backgroundColor: AppTheme.mediumGrey,
               valueColor: const AlwaysStoppedAnimation(AppTheme.canadianRed),
             ),
           ),
           const SizedBox(height: 8),
-          const Text(
-            'Complete quizzes to earn XP and level up!',
-            style: TextStyle(fontSize: 12, color: AppTheme.mediumGrey),
+          Text(
+            _xp >= 1000
+                ? 'Maximum rank reached!'
+                : 'Earn ${_nextRankXP - _xp} more XP to reach $_rankName!',
+            style: const TextStyle(fontSize: 12, color: AppTheme.mediumGrey),
           ),
         ],
       ),
@@ -136,11 +197,11 @@ class ProfileScreen extends StatelessWidget {
   Widget _buildStatsRow() {
     return Row(
       children: [
-        Expanded(child: _buildStatCard('0', 'Quizzes\nCompleted', Icons.quiz)),
+        Expanded(child: _buildStatCard('$_quizzes', 'Quizzes\nCompleted', Icons.quiz)),
         const SizedBox(width: 12),
-        Expanded(child: _buildStatCard('0%', 'Average\nScore', Icons.percent)),
+        Expanded(child: _buildStatCard('$_xp XP', 'Total\nEarned', Icons.star)),
         const SizedBox(width: 12),
-        Expanded(child: _buildStatCard('0', 'Day\nStreak', Icons.local_fire_department)),
+        Expanded(child: _buildStatCard(_rankName, 'Current\nRank', Icons.military_tech)),
       ],
     );
   }
@@ -166,8 +227,9 @@ class ProfileScreen extends StatelessWidget {
           const SizedBox(height: 8),
           Text(
             value,
+            textAlign: TextAlign.center,
             style: const TextStyle(
-              fontSize: 22,
+              fontSize: 16,
               fontWeight: FontWeight.bold,
               color: AppTheme.darkGrey,
             ),
@@ -184,12 +246,12 @@ class ProfileScreen extends StatelessWidget {
 
   Widget _buildBadgesSection() {
     final badges = [
-      {'icon': Icons.star, 'label': 'First Quiz', 'earned': false},
-      {'icon': Icons.local_fire_department, 'label': '3 Day Streak', 'earned': false},
-      {'icon': Icons.emoji_events, 'label': 'Perfect Score', 'earned': false},
-      {'icon': Icons.speed, 'label': 'Speed Demon', 'earned': false},
-      {'icon': Icons.school, 'label': 'All Sets Done', 'earned': false},
-      {'icon': Icons.military_tech, 'label': 'Exam Ready', 'earned': false},
+      {'icon': Icons.star, 'label': 'First Quiz', 'earned': _quizzes >= 1},
+      {'icon': Icons.local_fire_department, 'label': '5 Quizzes', 'earned': _quizzes >= 5},
+      {'icon': Icons.emoji_events, 'label': '100 XP', 'earned': _xp >= 100},
+      {'icon': Icons.speed, 'label': '300 XP', 'earned': _xp >= 300},
+      {'icon': Icons.school, 'label': '600 XP', 'earned': _xp >= 600},
+      {'icon': Icons.military_tech, 'label': 'Expert', 'earned': _xp >= 1000},
     ];
 
     return Column(
@@ -251,11 +313,11 @@ class ProfileScreen extends StatelessWidget {
 
   Widget _buildRankSection() {
     final ranks = [
-      {'rank': 'Beginner', 'xp': '0 XP', 'color': AppTheme.mediumGrey, 'current': true},
-      {'rank': 'Learner', 'xp': '100 XP', 'color': AppTheme.bronze, 'current': false},
-      {'rank': 'Intermediate', 'xp': '300 XP', 'color': AppTheme.silver, 'current': false},
-      {'rank': 'Advanced', 'xp': '600 XP', 'color': AppTheme.gold, 'current': false},
-      {'rank': 'Expert', 'xp': '1000 XP', 'color': AppTheme.platinum, 'current': false},
+      {'rank': 'Beginner', 'xp': '0 XP', 'color': AppTheme.mediumGrey, 'current': _rankName == 'Beginner'},
+      {'rank': 'Learner', 'xp': '100 XP', 'color': AppTheme.bronze, 'current': _rankName == 'Learner'},
+      {'rank': 'Intermediate', 'xp': '300 XP', 'color': AppTheme.silver, 'current': _rankName == 'Intermediate'},
+      {'rank': 'Advanced', 'xp': '600 XP', 'color': AppTheme.gold, 'current': _rankName == 'Advanced'},
+      {'rank': 'Expert', 'xp': '1000 XP', 'color': AppTheme.platinum, 'current': _rankName == 'Expert'},
     ];
 
     return Column(

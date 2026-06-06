@@ -1,14 +1,17 @@
 ﻿import 'package:flutter/material.dart';
 import '../models/question.dart';
 import '../theme/app_theme.dart';
+import '../services/storage_service.dart';
 
 class QuizScreen extends StatefulWidget {
   final String setTitle;
+  final String setId;
   final List<Question> questions;
 
   const QuizScreen({
     super.key,
     required this.setTitle,
+    required this.setId,
     required this.questions,
   });
 
@@ -21,24 +24,36 @@ class _QuizScreenState extends State<QuizScreen> {
   int? _selectedAnswer;
   bool _answered = false;
   int _score = 0;
-  List<bool> _results = [];
+  bool _isBookmarked = false;
 
   Question get _currentQuestion => widget.questions[_currentIndex];
   bool get _isLastQuestion => _currentIndex == widget.questions.length - 1;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadBookmark();
+  }
+
+  Future<void> _loadBookmark() async {
+    final bookmarked = await StorageService.isBookmarked(_currentQuestion.id);
+    setState(() => _isBookmarked = bookmarked);
+  }
 
   void _selectAnswer(int index) {
     if (_answered) return;
     setState(() {
       _selectedAnswer = index;
       _answered = true;
-      bool isCorrect = index == _currentQuestion.correctIndex;
-      if (isCorrect) _score++;
-      _results.add(isCorrect);
+      if (index == _currentQuestion.correctIndex) _score++;
     });
   }
 
-  void _nextQuestion() {
+  Future<void> _nextQuestion() async {
     if (_isLastQuestion) {
+      await StorageService.saveScore(widget.setId, _score, widget.questions.length);
+      await StorageService.incrementQuizzes();
+      await StorageService.addXP(_score * 10);
       _showResults();
       return;
     }
@@ -46,7 +61,14 @@ class _QuizScreenState extends State<QuizScreen> {
       _currentIndex++;
       _selectedAnswer = null;
       _answered = false;
+      _isBookmarked = false;
     });
+    _loadBookmark();
+  }
+
+  Future<void> _toggleBookmark() async {
+    await StorageService.toggleBookmark(_currentQuestion.id);
+    setState(() => _isBookmarked = !_isBookmarked);
   }
 
   void _showResults() {
@@ -57,6 +79,7 @@ class _QuizScreenState extends State<QuizScreen> {
           score: _score,
           total: widget.questions.length,
           setTitle: widget.setTitle,
+          xpEarned: _score * 10,
         ),
       ),
     );
@@ -88,11 +111,19 @@ class _QuizScreenState extends State<QuizScreen> {
           icon: const Icon(Icons.close),
           onPressed: () => Navigator.pop(context),
         ),
+        actions: [
+          IconButton(
+            icon: Icon(
+              _isBookmarked ? Icons.bookmark : Icons.bookmark_border,
+              color: AppTheme.white,
+            ),
+            onPressed: _toggleBookmark,
+          ),
+        ],
       ),
       body: SafeArea(
         child: Column(
           children: [
-            // Progress Bar
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
               child: Column(
@@ -102,10 +133,7 @@ class _QuizScreenState extends State<QuizScreen> {
                     children: [
                       Text(
                         'Question ${_currentIndex + 1} of ${widget.questions.length}',
-                        style: const TextStyle(
-                          fontSize: 13,
-                          color: AppTheme.mediumGrey,
-                        ),
+                        style: const TextStyle(fontSize: 13, color: AppTheme.mediumGrey),
                       ),
                       Text(
                         'Score: $_score',
@@ -130,8 +158,6 @@ class _QuizScreenState extends State<QuizScreen> {
                 ],
               ),
             ),
-
-            // Question
             Expanded(
               child: SingleChildScrollView(
                 padding: const EdgeInsets.all(20),
@@ -155,8 +181,6 @@ class _QuizScreenState extends State<QuizScreen> {
                       ),
                     ),
                     const SizedBox(height: 24),
-
-                    // Options
                     ...List.generate(
                       _currentQuestion.options.length,
                       (index) => Padding(
@@ -186,7 +210,9 @@ class _QuizScreenState extends State<QuizScreen> {
                                   height: 28,
                                   decoration: BoxDecoration(
                                     shape: BoxShape.circle,
-                                    color: _answered && (index == _currentQuestion.correctIndex || index == _selectedAnswer)
+                                    color: _answered &&
+                                            (index == _currentQuestion.correctIndex ||
+                                                index == _selectedAnswer)
                                         ? Colors.white24
                                         : AppTheme.lightGrey,
                                   ),
@@ -214,7 +240,9 @@ class _QuizScreenState extends State<QuizScreen> {
                                 ),
                                 if (_answered && index == _currentQuestion.correctIndex)
                                   const Icon(Icons.check_circle, color: AppTheme.white, size: 20),
-                                if (_answered && index == _selectedAnswer && index != _currentQuestion.correctIndex)
+                                if (_answered &&
+                                    index == _selectedAnswer &&
+                                    index != _currentQuestion.correctIndex)
                                   const Icon(Icons.cancel, color: AppTheme.white, size: 20),
                               ],
                             ),
@@ -222,11 +250,8 @@ class _QuizScreenState extends State<QuizScreen> {
                         ),
                       ),
                     ),
-
-                    // Explanation
                     if (_answered)
-                      AnimatedContainer(
-                        duration: const Duration(milliseconds: 300),
+                      Container(
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
                           color: AppTheme.highlight,
@@ -241,10 +266,7 @@ class _QuizScreenState extends State<QuizScreen> {
                             Expanded(
                               child: Text(
                                 _currentQuestion.explanation,
-                                style: const TextStyle(
-                                  fontSize: 14,
-                                  color: AppTheme.darkGrey,
-                                ),
+                                style: const TextStyle(fontSize: 14, color: AppTheme.darkGrey),
                               ),
                             ),
                           ],
@@ -254,8 +276,6 @@ class _QuizScreenState extends State<QuizScreen> {
                 ),
               ),
             ),
-
-            // Next Button
             if (_answered)
               Padding(
                 padding: const EdgeInsets.all(20),
@@ -275,11 +295,13 @@ class _ResultScreen extends StatelessWidget {
   final int score;
   final int total;
   final String setTitle;
+  final int xpEarned;
 
   const _ResultScreen({
     required this.score,
     required this.total,
     required this.setTitle,
+    required this.xpEarned,
   });
 
   @override
@@ -310,10 +332,8 @@ class _ResultScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 8),
-              Text(
-                setTitle,
-                style: const TextStyle(fontSize: 16, color: AppTheme.mediumGrey),
-              ),
+              Text(setTitle,
+                  style: const TextStyle(fontSize: 16, color: AppTheme.mediumGrey)),
               const SizedBox(height: 32),
               Container(
                 padding: const EdgeInsets.all(24),
@@ -334,6 +354,22 @@ class _ResultScreen extends StatelessWidget {
                     Text(
                       '${(percentage * 100).toInt()}%',
                       style: const TextStyle(fontSize: 20, color: AppTheme.white),
+                    ),
+                    const SizedBox(height: 12),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      decoration: BoxDecoration(
+                        color: Colors.white24,
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Text(
+                        '+$xpEarned XP earned!',
+                        style: const TextStyle(
+                          color: AppTheme.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
+                      ),
                     ),
                   ],
                 ),

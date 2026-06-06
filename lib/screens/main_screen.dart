@@ -1,6 +1,7 @@
 ﻿import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
 import 'home_screen.dart';
+import 'bookmarks_screen.dart';
 import 'profile_screen.dart';
 
 class MainScreen extends StatefulWidget {
@@ -16,7 +17,7 @@ class _MainScreenState extends State<MainScreen> {
   final List<Widget> _screens = [
     const HomeScreen(),
     const Center(child: Text('Practice', style: TextStyle(fontSize: 24))),
-    const Center(child: Text('Bookmarks', style: TextStyle(fontSize: 24))),
+    const BookmarksScreen(),
     const ProfileScreen(),
   ];
 

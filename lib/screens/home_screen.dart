@@ -1,11 +1,51 @@
 ﻿import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
 import '../data/question_data.dart';
+import '../services/storage_service.dart';
 import 'quiz_screen.dart';
 import 'exam_screen.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  int _xp = 0;
+  int _quizzes = 0;
+  String _rank = 'Beginner';
+
+  @override
+  void initState() {
+    super.initState();
+    _loadData();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _loadData();
+  }
+
+  Future<void> _loadData() async {
+    final xp = await StorageService.getXP();
+    final quizzes = await StorageService.getQuizzesCompleted();
+    setState(() {
+      _xp = xp;
+      _quizzes = quizzes;
+      _rank = _getRank(xp);
+    });
+  }
+
+  String _getRank(int xp) {
+    if (xp >= 1000) return 'Expert';
+    if (xp >= 600) return 'Advanced';
+    if (xp >= 300) return 'Intermediate';
+    if (xp >= 100) return 'Learner';
+    return 'Beginner';
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -61,9 +101,9 @@ class HomeScreen extends StatelessWidget {
               style: TextStyle(color: AppTheme.white, fontSize: 14)),
           const SizedBox(height: 16),
           Row(children: [
-            _buildStatChip('Beginner'),
+            _buildStatChip('🏆 $_rank'),
             const SizedBox(width: 8),
-            _buildStatChip('0 XP'),
+            _buildStatChip('⚡ $_xp XP'),
           ]),
         ],
       ),
@@ -85,6 +125,7 @@ class HomeScreen extends StatelessWidget {
   }
 
   Widget _buildProgressCard() {
+    double progress = _quizzes / 8;
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(color: AppTheme.lightGrey, borderRadius: BorderRadius.circular(12)),
@@ -95,15 +136,15 @@ class HomeScreen extends StatelessWidget {
             children: [
               const Text('Overall Readiness',
                   style: TextStyle(fontWeight: FontWeight.w600, color: AppTheme.darkGrey)),
-              const Text('0%',
-                  style: TextStyle(fontWeight: FontWeight.bold, color: AppTheme.canadianRed)),
+              Text('${(progress * 100).toInt()}%',
+                  style: const TextStyle(fontWeight: FontWeight.bold, color: AppTheme.canadianRed)),
             ],
           ),
           const SizedBox(height: 10),
           ClipRRect(
             borderRadius: BorderRadius.circular(8),
             child: LinearProgressIndicator(
-              value: 0,
+              value: progress.clamp(0.0, 1.0),
               minHeight: 10,
               backgroundColor: AppTheme.mediumGrey,
               valueColor: const AlwaysStoppedAnimation(AppTheme.canadianRed),
@@ -113,9 +154,9 @@ class HomeScreen extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              _buildMiniStat('0', 'Questions\nDone'),
-              _buildMiniStat('0%', 'Accuracy'),
-              _buildMiniStat('0', 'Badges'),
+              _buildMiniStat('$_quizzes', 'Quizzes\nDone'),
+              _buildMiniStat('$_xp XP', 'Total\nEarned'),
+              _buildMiniStat(_rank, 'Current\nRank'),
             ],
           ),
         ],
@@ -127,7 +168,8 @@ class HomeScreen extends StatelessWidget {
     return Column(
       children: [
         Text(value,
-            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: AppTheme.canadianRed)),
+            textAlign: TextAlign.center,
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppTheme.canadianRed)),
         Text(label,
             textAlign: TextAlign.center,
             style: const TextStyle(fontSize: 11, color: AppTheme.mediumGrey)),
@@ -137,14 +179,14 @@ class HomeScreen extends StatelessWidget {
 
   Widget _buildQuickStartGrid(BuildContext context) {
     final sets = [
-      {'title': 'Set 1', 'topic': 'Road Signs',      'questions': QuestionData.set1},
-      {'title': 'Set 2', 'topic': 'Traffic Laws',    'questions': QuestionData.set2},
-      {'title': 'Set 3', 'topic': 'Right of Way',    'questions': QuestionData.set3},
-      {'title': 'Set 4', 'topic': 'Speed Limits',    'questions': QuestionData.set4},
-      {'title': 'Set 5', 'topic': 'Parking Rules',   'questions': QuestionData.set5},
-      {'title': 'Set 6', 'topic': 'Alcohol & Drugs', 'questions': QuestionData.set6},
-      {'title': 'Set 7', 'topic': 'Winter Driving',  'questions': QuestionData.set7},
-      {'title': 'Set 8', 'topic': 'Mixed Review',    'questions': QuestionData.set8},
+      {'title': 'Set 1', 'topic': 'Road Signs',      'id': 'set1', 'questions': QuestionData.set1},
+      {'title': 'Set 2', 'topic': 'Traffic Laws',    'id': 'set2', 'questions': QuestionData.set2},
+      {'title': 'Set 3', 'topic': 'Right of Way',    'id': 'set3', 'questions': QuestionData.set3},
+      {'title': 'Set 4', 'topic': 'Speed Limits',    'id': 'set4', 'questions': QuestionData.set4},
+      {'title': 'Set 5', 'topic': 'Parking Rules',   'id': 'set5', 'questions': QuestionData.set5},
+      {'title': 'Set 6', 'topic': 'Alcohol & Drugs', 'id': 'set6', 'questions': QuestionData.set6},
+      {'title': 'Set 7', 'topic': 'Winter Driving',  'id': 'set7', 'questions': QuestionData.set7},
+      {'title': 'Set 8', 'topic': 'Mixed Review',    'id': 'set8', 'questions': QuestionData.set8},
     ];
     return GridView.builder(
       shrinkWrap: true,
@@ -162,15 +204,19 @@ class HomeScreen extends StatelessWidget {
 
   Widget _buildSetCard(BuildContext context, Map<String, dynamic> set) {
     return GestureDetector(
-      onTap: () => Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (_) => QuizScreen(
-            setTitle: set['title'] as String,
-            questions: set['questions'] as dynamic,
+      onTap: () async {
+        await Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => QuizScreen(
+              setTitle: set['title'] as String,
+              setId: set['id'] as String,
+              questions: set['questions'] as dynamic,
+            ),
           ),
-        ),
-      ),
+        );
+        _loadData();
+      },
       child: Container(
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
