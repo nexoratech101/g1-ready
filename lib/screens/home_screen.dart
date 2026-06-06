@@ -1,5 +1,7 @@
 ﻿import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
+import '../data/question_data.dart';
+import 'quiz_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -31,7 +33,7 @@ class HomeScreen extends StatelessWidget {
               const SizedBox(height: 24),
               _buildSectionTitle('Practice Tests'),
               const SizedBox(height: 12),
-              _buildQuickStartGrid(),
+              _buildQuickStartGrid(context),
               const SizedBox(height: 24),
               _buildSectionTitle('Exam Mode'),
               const SizedBox(height: 12),
@@ -135,16 +137,16 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildQuickStartGrid() {
+  Widget _buildQuickStartGrid(BuildContext context) {
     final sets = [
-      {'title': 'Set 1', 'topic': 'Road Signs'},
-      {'title': 'Set 2', 'topic': 'Traffic Laws'},
-      {'title': 'Set 3', 'topic': 'Right of Way'},
-      {'title': 'Set 4', 'topic': 'Speed Limits'},
-      {'title': 'Set 5', 'topic': 'Parking Rules'},
-      {'title': 'Set 6', 'topic': 'Alcohol & Drugs'},
-      {'title': 'Set 7', 'topic': 'Winter Driving'},
-      {'title': 'Set 8', 'topic': 'Mixed Review'},
+      {'title': 'Set 1', 'topic': 'Road Signs', 'questions': QuestionData.set1},
+      {'title': 'Set 2', 'topic': 'Traffic Laws', 'questions': QuestionData.set1},
+      {'title': 'Set 3', 'topic': 'Right of Way', 'questions': QuestionData.set1},
+      {'title': 'Set 4', 'topic': 'Speed Limits', 'questions': QuestionData.set1},
+      {'title': 'Set 5', 'topic': 'Parking Rules', 'questions': QuestionData.set1},
+      {'title': 'Set 6', 'topic': 'Alcohol & Drugs', 'questions': QuestionData.set1},
+      {'title': 'Set 7', 'topic': 'Winter Driving', 'questions': QuestionData.set1},
+      {'title': 'Set 8', 'topic': 'Mixed Review', 'questions': QuestionData.set1},
     ];
     return GridView.builder(
       shrinkWrap: true,
@@ -156,34 +158,45 @@ class HomeScreen extends StatelessWidget {
         childAspectRatio: 1.4,
       ),
       itemCount: sets.length,
-      itemBuilder: (context, index) => _buildSetCard(sets[index]),
+      itemBuilder: (context, index) => _buildSetCard(context, sets[index]),
     );
   }
 
-  Widget _buildSetCard(Map<String, dynamic> set) {
-    return Container(
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: AppTheme.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppTheme.lightGrey, width: 1.5),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 4, offset: const Offset(0, 2))],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          const Icon(Icons.quiz, color: AppTheme.canadianRed, size: 28),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(set['title'] as String,
-                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: AppTheme.darkGrey)),
-              Text(set['topic'] as String,
-                  style: const TextStyle(fontSize: 11, color: AppTheme.mediumGrey)),
-            ],
+  Widget _buildSetCard(BuildContext context, Map<String, dynamic> set) {
+    return GestureDetector(
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => QuizScreen(
+            setTitle: set['title'] as String,
+            questions: set['questions'] as dynamic,
           ),
-        ],
+        ),
+      ),
+      child: Container(
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: AppTheme.white,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: AppTheme.lightGrey, width: 1.5),
+          boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 4, offset: const Offset(0, 2))],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const Icon(Icons.quiz, color: AppTheme.canadianRed, size: 28),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(set['title'] as String,
+                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: AppTheme.darkGrey)),
+                Text(set['topic'] as String,
+                    style: const TextStyle(fontSize: 11, color: AppTheme.mediumGrey)),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
