@@ -8,7 +8,6 @@ import 'main_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
-
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
@@ -19,6 +18,7 @@ class _HomeScreenState extends State<HomeScreen> {
   int _streak = 0;
   int _badges = 0;
   String _learningModeId = 'exam_focus';
+  DateTime? _examDate;
 
   @override
   void initState() {
@@ -37,13 +37,19 @@ class _HomeScreenState extends State<HomeScreen> {
     final quizzes = await StorageService.getQuizzesCompleted();
     final streak = await StorageService.updateStreak();
     final mode = await StorageService.getLearningMode();
+    final examDate = await StorageService.getExamDate();
     setState(() {
       _xp = xp;
       _quizzes = quizzes;
       _streak = streak;
       _badges = _calcBadges(xp, quizzes);
       _learningModeId = mode;
+      _examDate = examDate;
     });
+    // Show exam date picker if exam focus and no date set
+    if (mode == 'exam_focus' && examDate == null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) => _promptExamDate());
+    }
   }
 
   int _calcBadges(int xp, int quizzes) {
@@ -86,7 +92,32 @@ class _HomeScreenState extends State<HomeScreen> {
     return (_xp - _currentRankXP) / (_nextRankXP - _currentRankXP);
   }
 
+  int get _daysLeft {
+    if (_examDate == null) return -1;
+    return _examDate!.difference(DateTime.now()).inDays + 1;
+  }
+
   LearningMode get _mode => LearningModes.getById(_learningModeId);
+
+  Future<void> _promptExamDate() async {
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now().add(const Duration(days: 14)),
+      firstDate: DateTime.now().add(const Duration(days: 1)),
+      lastDate: DateTime.now().add(const Duration(days: 365)),
+      helpText: 'When is your G1 exam?',
+      builder: (ctx, child) => Theme(
+        data: Theme.of(ctx).copyWith(
+          colorScheme: ColorScheme.light(primary: _mode.color),
+        ),
+        child: child!,
+      ),
+    );
+    if (picked != null) {
+      await StorageService.setExamDate(picked);
+      setState(() => _examDate = picked);
+    }
+  }
 
   void _showRankLadder() {
     showModalBottomSheet(
@@ -149,7 +180,12 @@ class _HomeScreenState extends State<HomeScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _buildWelcomeCard(),
-              const SizedBox(height: 16),
+              const SizedBox(height: 12),
+              // Exam countdown — only show if exam_focus mode and date is set
+              if (_learningModeId == 'exam_focus' && _examDate != null)
+                _buildExamCountdownBanner(),
+              if (_learningModeId == 'exam_focus' && _examDate != null)
+                const SizedBox(height: 12),
               _buildRankProgressCard(),
               const SizedBox(height: 24),
               _buildSectionTitle('What would you like to do?'),
@@ -174,18 +210,12 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Icon(_mode.icon, color: AppTheme.white, size: 20),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  _mode.bannerMessage,
-                  style: const TextStyle(color: Colors.white70, fontSize: 13),
-                ),
-              ),
-            ],
-          ),
+          Row(children: [
+            Icon(_mode.icon, color: AppTheme.white, size: 18),
+            const SizedBox(width: 8),
+            Expanded(child: Text(_mode.bannerMessage,
+                style: const TextStyle(color: Colors.white70, fontSize: 13))),
+          ]),
           const SizedBox(height: 10),
           const Text('Welcome Back! 👋',
               style: TextStyle(color: AppTheme.white, fontSize: 22, fontWeight: FontWeight.bold)),
@@ -221,6 +251,58 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  Widget _buildExamCountdownBanner() {
+    final days = _daysLeft;
+    Color color;
+    String emoji;
+    String label;
+
+    if (days <= 0) {
+      color = AppTheme.incorrect; emoji = '🏁'; label = 'Exam Day!';
+    } else if (days <= 3) {
+      color = AppTheme.incorrect; emoji = '🚨'; label = '$days days left — Crunch Time!';
+    } else if (days <= 7) {
+      color = AppTheme.warning; emoji = '🔴'; label = '$days days left — Intensive Mode';
+    } else if (days <= 14) {
+      color = const Color(0xFFFF8F00); emoji = '🟠'; label = '$days days left — Focused Study';
+    } else {
+      color = AppTheme.correct; emoji = '🟢'; label = '$days days until your exam';
+    }
+
+    return GestureDetector(
+      onTap: _promptExamDate,
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        decoration: BoxDecoration(
+          color: color.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: color.withOpacity(0.4), width: 1.5),
+        ),
+        child: Row(
+          children: [
+            Text(emoji, style: const TextStyle(fontSize: 24)),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(label,
+                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: color)),
+                  Text(
+                    'Exam: ${_examDate!.day}/${_examDate!.month}/${_examDate!.year} — tap to change',
+                    style: TextStyle(fontSize: 11, color: color.withOpacity(0.7)),
+                  ),
+                ],
+              ),
+            ),
+            Icon(Icons.edit_calendar, color: color, size: 18),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildRankProgressCard() {
     final xpInCurrentRank = _xp - _currentRankXP;
     final xpNeededForRank = _nextRankXP - _currentRankXP;
@@ -230,24 +312,18 @@ class _HomeScreenState extends State<HomeScreen> {
       onTap: _showXPBreakdown,
       child: Container(
         padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: AppTheme.lightGrey,
-          borderRadius: BorderRadius.circular(12),
-        ),
+        decoration: BoxDecoration(color: AppTheme.lightGrey, borderRadius: BorderRadius.circular(12)),
         child: Column(
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text('Rank Progress',
-                        style: TextStyle(fontWeight: FontWeight.w600, fontSize: 15, color: AppTheme.darkGrey)),
-                    Text('$_rank → ${_getNextRankName()}',
-                        style: const TextStyle(fontSize: 12, color: AppTheme.mediumGrey)),
-                  ],
-                ),
+                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  const Text('Rank Progress',
+                      style: TextStyle(fontWeight: FontWeight.w600, fontSize: 15, color: AppTheme.darkGrey)),
+                  Text('$_rank → ${_getNextRankName()}',
+                      style: const TextStyle(fontSize: 12, color: AppTheme.mediumGrey)),
+                ]),
                 const Row(children: [
                   Icon(Icons.touch_app, size: 14, color: AppTheme.mediumGrey),
                   SizedBox(width: 2),
@@ -340,10 +416,8 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildCard(BuildContext context, {
-    required IconData icon,
-    required String title,
-    required String subtitle,
-    required Color color,
+    required IconData icon, required String title,
+    required String subtitle, required Color color,
     required VoidCallback onTap,
   }) {
     return GestureDetector(
@@ -358,11 +432,7 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(color: Colors.white24, borderRadius: BorderRadius.circular(10)),
-              child: Icon(icon, color: AppTheme.white, size: 24),
-            ),
+            Container(padding: const EdgeInsets.all(8), decoration: BoxDecoration(color: Colors.white24, borderRadius: BorderRadius.circular(10)), child: Icon(icon, color: AppTheme.white, size: 24)),
             const SizedBox(height: 12),
             Text(title, style: const TextStyle(color: AppTheme.white, fontSize: 16, fontWeight: FontWeight.bold, height: 1.2)),
             const SizedBox(height: 4),
@@ -371,14 +441,11 @@ class _HomeScreenState extends State<HomeScreen> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
               decoration: BoxDecoration(color: Colors.white24, borderRadius: BorderRadius.circular(20)),
-              child: const Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text('Start', style: TextStyle(color: AppTheme.white, fontSize: 12, fontWeight: FontWeight.bold)),
-                  SizedBox(width: 4),
-                  Icon(Icons.arrow_forward, color: AppTheme.white, size: 12),
-                ],
-              ),
+              child: const Row(mainAxisSize: MainAxisSize.min, children: [
+                Text('Start', style: TextStyle(color: AppTheme.white, fontSize: 12, fontWeight: FontWeight.bold)),
+                SizedBox(width: 4),
+                Icon(Icons.arrow_forward, color: AppTheme.white, size: 12),
+              ]),
             ),
           ],
         ),
@@ -431,28 +498,17 @@ class _RankLadderSheet extends StatelessWidget {
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(color: isCurrent ? AppTheme.canadianRed : AppTheme.lightGrey, width: 1.5),
               ),
-              child: Row(
-                children: [
-                  Container(
-                    width: 40, height: 40,
-                    decoration: BoxDecoration(color: isUnlocked ? color : AppTheme.lightGrey, shape: BoxShape.circle),
-                    child: Icon(Icons.emoji_events, color: isUnlocked ? AppTheme.white : AppTheme.mediumGrey, size: 20),
-                  ),
-                  const SizedBox(width: 14),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(rank['rank'] as String, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: isCurrent ? AppTheme.white : AppTheme.darkGrey)),
-                        Text('${rank['xp']} XP — ${rank['desc']}', style: TextStyle(fontSize: 11, color: isCurrent ? Colors.white70 : AppTheme.mediumGrey)),
-                      ],
-                    ),
-                  ),
-                  if (isCurrent) Container(padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4), decoration: BoxDecoration(color: Colors.white24, borderRadius: BorderRadius.circular(20)), child: const Text('Current', style: TextStyle(color: AppTheme.white, fontSize: 12, fontWeight: FontWeight.w600))),
-                  if (!isCurrent && isUnlocked) const Icon(Icons.check_circle, color: AppTheme.correct, size: 20),
-                  if (!isUnlocked) const Icon(Icons.lock_outline, color: AppTheme.mediumGrey, size: 20),
-                ],
-              ),
+              child: Row(children: [
+                Container(width: 40, height: 40, decoration: BoxDecoration(color: isUnlocked ? color : AppTheme.lightGrey, shape: BoxShape.circle), child: Icon(Icons.emoji_events, color: isUnlocked ? AppTheme.white : AppTheme.mediumGrey, size: 20)),
+                const SizedBox(width: 14),
+                Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  Text(rank['rank'] as String, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: isCurrent ? AppTheme.white : AppTheme.darkGrey)),
+                  Text('${rank['xp']} XP — ${rank['desc']}', style: TextStyle(fontSize: 11, color: isCurrent ? Colors.white70 : AppTheme.mediumGrey)),
+                ])),
+                if (isCurrent) Container(padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4), decoration: BoxDecoration(color: Colors.white24, borderRadius: BorderRadius.circular(20)), child: const Text('Current', style: TextStyle(color: AppTheme.white, fontSize: 12, fontWeight: FontWeight.w600))),
+                if (!isCurrent && isUnlocked) const Icon(Icons.check_circle, color: AppTheme.correct, size: 20),
+                if (!isUnlocked) const Icon(Icons.lock_outline, color: AppTheme.mediumGrey, size: 20),
+              ]),
             );
           }),
         ],
@@ -488,14 +544,12 @@ class _XPBreakdownSheet extends StatelessWidget {
             margin: const EdgeInsets.only(bottom: 8),
             padding: const EdgeInsets.all(14),
             decoration: BoxDecoration(color: AppTheme.lightGrey, borderRadius: BorderRadius.circular(12)),
-            child: Row(
-              children: [
-                Container(width: 36, height: 36, decoration: BoxDecoration(color: (row['color'] as Color).withOpacity(0.15), shape: BoxShape.circle), child: Icon(row['icon'] as IconData, color: row['color'] as Color, size: 18)),
-                const SizedBox(width: 12),
-                Expanded(child: Text(row['label'] as String, style: const TextStyle(fontSize: 14, color: AppTheme.darkGrey))),
-                Text(row['value'] as String, style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: row['color'] as Color)),
-              ],
-            ),
+            child: Row(children: [
+              Container(width: 36, height: 36, decoration: BoxDecoration(color: (row['color'] as Color).withOpacity(0.15), shape: BoxShape.circle), child: Icon(row['icon'] as IconData, color: row['color'] as Color, size: 18)),
+              const SizedBox(width: 12),
+              Expanded(child: Text(row['label'] as String, style: const TextStyle(fontSize: 14, color: AppTheme.darkGrey))),
+              Text(row['value'] as String, style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: row['color'] as Color)),
+            ]),
           )),
         ],
       ),

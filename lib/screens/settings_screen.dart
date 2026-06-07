@@ -2,19 +2,17 @@
 import '../theme/app_theme.dart';
 import '../services/storage_service.dart';
 import '../widgets/learning_mode_picker.dart';
-import 'marathon_screen.dart';
-import 'quick_mode_screen.dart';
 import 'exam_countdown_screen.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
-
   @override
   State<SettingsScreen> createState() => _SettingsScreenState();
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
   String _learningModeId = 'exam_focus';
+  DateTime? _examDate;
 
   @override
   void initState() {
@@ -24,12 +22,34 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   Future<void> _load() async {
     final mode = await StorageService.getLearningMode();
-    setState(() => _learningModeId = mode);
+    final examDate = await StorageService.getExamDate();
+    setState(() {
+      _learningModeId = mode;
+      _examDate = examDate;
+    });
   }
 
-  Future<void> _onModeSelected(String id) async {
-    await StorageService.setLearningMode(id);
-    setState(() => _learningModeId = id);
+  Future<void> _pickExamDate() async {
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: _examDate ?? DateTime.now().add(const Duration(days: 14)),
+      firstDate: DateTime.now().add(const Duration(days: 1)),
+      lastDate: DateTime.now().add(const Duration(days: 365)),
+      helpText: 'When is your G1 exam?',
+      builder: (ctx, child) => Theme(
+        data: Theme.of(ctx).copyWith(colorScheme: const ColorScheme.light(primary: AppTheme.canadianRed)),
+        child: child!,
+      ),
+    );
+    if (picked != null) {
+      await StorageService.setExamDate(picked);
+      setState(() => _examDate = picked);
+    }
+  }
+
+  Future<void> _clearExamDate() async {
+    await StorageService.setExamDate(null);
+    setState(() => _examDate = null);
   }
 
   void _confirmReset() {
@@ -37,7 +57,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       context: context,
       builder: (_) => AlertDialog(
         title: const Text('Reset Progress?'),
-        content: const Text('This will clear all your XP, scores, bookmarks and badges. This cannot be undone.'),
+        content: const Text('This will clear all your XP scores and bookmarks. This cannot be undone.'),
         actions: [
           TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
           TextButton(
@@ -45,23 +65,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
               await StorageService.clearAll();
               Navigator.pop(context);
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Progress reset successfully'), backgroundColor: AppTheme.canadianRed),
+                const SnackBar(content: Text('Progress reset'), backgroundColor: AppTheme.canadianRed),
               );
             },
             child: const Text('Reset', style: TextStyle(color: AppTheme.incorrect)),
           ),
         ],
-      ),
-    );
-  }
-
-  void _showAbout() {
-    showDialog(
-      context: context,
-      builder: (_) => AlertDialog(
-        title: const Text('About G1 Ready'),
-        content: const Text('G1 Ready helps Ontario drivers prepare for their G1 knowledge test.\n\n80 practice questions across 8 topics, exam simulation mode, and progress tracking.\n\nGood luck on your test! 🍁'),
-        actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text('Close', style: TextStyle(color: AppTheme.canadianRed)))],
       ),
     );
   }
@@ -78,63 +87,130 @@ class _SettingsScreenState extends State<SettingsScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
 
-              // ── Learning Mode ────────────────────────────────────────
-              LearningModePicker(
-                selectedId: _learningModeId,
-                onSelected: _onModeSelected,
+              // ── Learning Mode Dropdown ────────────────────────────────
+              _sectionTitle('Learning Mode'),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                decoration: BoxDecoration(
+                  color: AppTheme.white,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: AppTheme.lightGrey, width: 1.5),
+                ),
+                child: DropdownButtonHideUnderline(
+                  child: DropdownButton<String>(
+                    value: _learningModeId,
+                    isExpanded: true,
+                    icon: const Icon(Icons.keyboard_arrow_down, color: AppTheme.canadianRed),
+                    items: LearningModes.all.map((mode) => DropdownMenuItem(
+                      value: mode.id,
+                      child: Row(children: [
+                        Container(
+                          width: 36, height: 36,
+                          decoration: BoxDecoration(color: mode.color.withOpacity(0.1), borderRadius: BorderRadius.circular(8)),
+                          child: Icon(mode.icon, color: mode.color, size: 18),
+                        ),
+                        const SizedBox(width: 12),
+                        Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                          Text(mode.title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: AppTheme.darkGrey)),
+                          Text(mode.description, style: const TextStyle(fontSize: 11, color: AppTheme.mediumGrey)),
+                        ]),
+                      ]),
+                    )).toList(),
+                    onChanged: (id) async {
+                      if (id == null) return;
+                      await StorageService.setLearningMode(id);
+                      setState(() => _learningModeId = id);
+                      // Prompt exam date if switching to exam focus
+                      if (id == 'exam_focus' && _examDate == null) {
+                        await _pickExamDate();
+                      }
+                    },
+                  ),
+                ),
               ),
-              const SizedBox(height: 28),
+              const SizedBox(height: 24),
 
-              // ── Special Practice Modes ───────────────────────────────
-              _sectionTitle('Special Practice Modes'),
-              const SizedBox(height: 12),
-              _modeTile(
-                icon: Icons.bolt,
-                color: const Color(0xFF2E7D32),
-                title: 'Quick 5-Min Mode',
-                subtitle: '10 rapid questions — perfect for busy schedules',
-                onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const QuickModeScreen())),
-              ),
-              _modeTile(
-                icon: Icons.all_inclusive,
-                color: const Color(0xFF6A1B9A),
-                title: 'Marathon Mode',
-                subtitle: 'Endless questions — test your endurance',
-                onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const MarathonScreen())),
-              ),
-              _modeTile(
-                icon: Icons.calendar_today,
-                color: AppTheme.canadianRed,
-                title: 'Exam Countdown',
-                subtitle: 'Set your exam date and get a day-by-day plan',
-                onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ExamCountdownScreen())),
-              ),
-              const SizedBox(height: 28),
-
-              // ── App Settings ─────────────────────────────────────────
-              _sectionTitle('App'),
-              _settingsTile(icon: Icons.info_outline, title: 'About G1 Ready', subtitle: 'Version 1.0.0', onTap: _showAbout),
-              _settingsTile(icon: Icons.star_outline, title: 'Rate the App', subtitle: 'Enjoying G1 Ready? Leave a review!', onTap: () {}),
-              const SizedBox(height: 20),
-
-              // ── Danger Zone ──────────────────────────────────────────
-              _sectionTitle('Progress'),
-              _settingsTile(icon: Icons.refresh, title: 'Reset Progress', subtitle: 'Clear all XP scores and bookmarks', onTap: _confirmReset, color: AppTheme.incorrect),
-              const SizedBox(height: 40),
-
-              // Footer
-              Center(
-                child: Column(
+              // ── Exam Date ─────────────────────────────────────────────
+              _sectionTitle('Exam Date'),
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: AppTheme.white,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: AppTheme.lightGrey, width: 1.5),
+                ),
+                child: Row(
                   children: [
-                    const Icon(Icons.drive_eta, size: 48, color: AppTheme.canadianRed),
-                    const SizedBox(height: 8),
-                    const Text('G1 Ready 🍁', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppTheme.canadianRed)),
-                    const SizedBox(height: 4),
-                    const Text('Ontario Driver\'s Test Prep', style: TextStyle(fontSize: 13, color: AppTheme.mediumGrey)),
-                    const SizedBox(height: 4),
-                    const Text('Version 1.0.0', style: TextStyle(fontSize: 12, color: AppTheme.mediumGrey)),
+                    Container(
+                      width: 44, height: 44,
+                      decoration: BoxDecoration(color: AppTheme.canadianRed.withOpacity(0.1), borderRadius: BorderRadius.circular(10)),
+                      child: const Icon(Icons.calendar_today, color: AppTheme.canadianRed, size: 22),
+                    ),
+                    const SizedBox(width: 14),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text('G1 Exam Date', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: AppTheme.darkGrey)),
+                          Text(
+                            _examDate != null
+                                ? '${_examDate!.day}/${_examDate!.month}/${_examDate!.year} — ${_examDate!.difference(DateTime.now()).inDays + 1} days left'
+                                : 'Not set',
+                            style: TextStyle(fontSize: 12, color: _examDate != null ? AppTheme.canadianRed : AppTheme.mediumGrey),
+                          ),
+                        ],
+                      ),
+                    ),
+                    if (_examDate != null)
+                      TextButton(onPressed: _clearExamDate, child: const Text('Clear', style: TextStyle(color: AppTheme.mediumGrey, fontSize: 12))),
+                    TextButton(
+                      onPressed: _pickExamDate,
+                      child: Text(_examDate != null ? 'Change' : 'Set', style: const TextStyle(color: AppTheme.canadianRed, fontWeight: FontWeight.bold)),
+                    ),
                   ],
                 ),
+              ),
+              const SizedBox(height: 24),
+
+              // ── Exam Countdown Screen ─────────────────────────────────
+              _sectionTitle('Study Tools'),
+              _settingsTile(
+                icon: Icons.calendar_today,
+                color: AppTheme.canadianRed,
+                title: 'Exam Countdown Plan',
+                subtitle: 'View your day-by-day study plan',
+                onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ExamCountdownScreen())),
+              ),
+              const SizedBox(height: 24),
+
+              // ── App ───────────────────────────────────────────────────
+              _sectionTitle('App'),
+              _settingsTile(icon: Icons.info_outline, color: AppTheme.darkGrey, title: 'About G1 Ready', subtitle: 'Version 1.0.0', onTap: () => showDialog(
+                context: context,
+                builder: (_) => AlertDialog(
+                  title: const Text('About G1 Ready'),
+                  content: const Text('G1 Ready helps Ontario drivers prepare for their G1 knowledge test.\n\nGood luck on your test! 🍁'),
+                  actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text('Close', style: TextStyle(color: AppTheme.canadianRed)))],
+                ),
+              )),
+              _settingsTile(icon: Icons.star_outline, color: AppTheme.darkGrey, title: 'Rate the App', subtitle: 'Enjoying G1 Ready? Leave a review!', onTap: () {}),
+              const SizedBox(height: 24),
+
+              // ── Progress ──────────────────────────────────────────────
+              _sectionTitle('Progress'),
+              _settingsTile(icon: Icons.refresh, color: AppTheme.incorrect, title: 'Reset Progress', subtitle: 'Clear all XP scores and bookmarks', onTap: _confirmReset),
+              const SizedBox(height: 40),
+
+              Center(
+                child: Column(children: [
+                  const Icon(Icons.drive_eta, size: 48, color: AppTheme.canadianRed),
+                  const SizedBox(height: 8),
+                  const Text('G1 Ready 🍁', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppTheme.canadianRed)),
+                  const SizedBox(height: 4),
+                  const Text('Ontario Driver\'s Test Prep', style: TextStyle(fontSize: 13, color: AppTheme.mediumGrey)),
+                  const SizedBox(height: 4),
+                  const Text('Version 1.0.0', style: TextStyle(fontSize: 12, color: AppTheme.mediumGrey)),
+                ]),
               ),
               const SizedBox(height: 20),
             ],
@@ -151,54 +227,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  Widget _modeTile({
+  Widget _settingsTile({
     required IconData icon,
     required Color color,
     required String title,
     required String subtitle,
     required VoidCallback onTap,
-  }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        margin: const EdgeInsets.only(bottom: 10),
-        padding: const EdgeInsets.all(14),
-        decoration: BoxDecoration(
-          color: AppTheme.white,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: color.withOpacity(0.3), width: 1.5),
-          boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 4, offset: const Offset(0, 2))],
-        ),
-        child: Row(
-          children: [
-            Container(
-              width: 44, height: 44,
-              decoration: BoxDecoration(color: color.withOpacity(0.1), borderRadius: BorderRadius.circular(12)),
-              child: Icon(icon, color: color, size: 22),
-            ),
-            const SizedBox(width: 14),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(title, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: color)),
-                  Text(subtitle, style: const TextStyle(fontSize: 12, color: AppTheme.mediumGrey)),
-                ],
-              ),
-            ),
-            Icon(Icons.arrow_forward_ios, size: 14, color: color),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _settingsTile({
-    required IconData icon,
-    required String title,
-    required String subtitle,
-    required VoidCallback onTap,
-    Color color = AppTheme.darkGrey,
   }) {
     return Container(
       margin: const EdgeInsets.only(bottom: 8),

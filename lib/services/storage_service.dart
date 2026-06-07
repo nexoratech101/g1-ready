@@ -10,6 +10,8 @@ class StorageService {
   static const _lastOpenKey = 'last_open';
   static const _totalQuestionsKey = 'total_questions';
   static const _learningModeKey = 'learning_mode';
+  static const _pinnedSortKey = 'pinned_sort';
+  static const _examDateKey = 'exam_date';
 
   // XP
   static Future<int> getXP() async {
@@ -152,6 +154,33 @@ class StorageService {
     }
   }
 
+  // Pinned Sort
+  static Future<String> getPinnedSort() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_pinnedSortKey) ?? 'importance';
+  }
+
+  static Future<void> setPinnedSort(String sort) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_pinnedSortKey, sort);
+  }
+
+  // Exam Date
+  static Future<DateTime?> getExamDate() async {
+    final prefs = await SharedPreferences.getInstance();
+    final s = prefs.getString(_examDateKey);
+    return s != null ? DateTime.parse(s) : null;
+  }
+
+  static Future<void> setExamDate(DateTime? date) async {
+    final prefs = await SharedPreferences.getInstance();
+    if (date == null) {
+      await prefs.remove(_examDateKey);
+    } else {
+      await prefs.setString(_examDateKey, date.toIso8601String());
+    }
+  }
+
   // Learning Mode
   static Future<String> getLearningMode() async {
     final prefs = await SharedPreferences.getInstance();
@@ -169,4 +198,5 @@ class StorageService {
     await prefs.clear();
   }
 }
+
 
