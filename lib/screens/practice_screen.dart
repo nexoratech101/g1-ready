@@ -138,7 +138,7 @@ class _PracticeScreenState extends State<PracticeScreen> {
     return Scaffold(
       backgroundColor: AppTheme.white,
       appBar: AppBar(
-        title: const Text('Practice Tests'),
+        title: const Text('Practice Quiz'),
         actions: [
           PopupMenuButton<String>(
             icon: const Icon(Icons.sort, color: AppTheme.white),
@@ -389,3 +389,5 @@ class _PracticeScreenState extends State<PracticeScreen> {
     );
   }
 }
+
+

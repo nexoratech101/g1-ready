@@ -2,7 +2,6 @@
 import '../theme/app_theme.dart';
 import '../services/storage_service.dart';
 import '../widgets/learning_mode_picker.dart';
-import 'exam_countdown_screen.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -37,7 +36,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
       lastDate: DateTime.now().add(const Duration(days: 365)),
       helpText: 'When is your G1 exam?',
       builder: (ctx, child) => Theme(
-        data: Theme.of(ctx).copyWith(colorScheme: const ColorScheme.light(primary: AppTheme.canadianRed)),
+        data: Theme.of(ctx).copyWith(
+          colorScheme: const ColorScheme.light(primary: AppTheme.canadianRed),
+        ),
         child: child!,
       ),
     );
@@ -57,7 +58,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       context: context,
       builder: (_) => AlertDialog(
         title: const Text('Reset Progress?'),
-        content: const Text('This will clear all your XP scores and bookmarks. This cannot be undone.'),
+        content: const Text('This will clear all your XP, scores and bookmarks. Cannot be undone.'),
         actions: [
           TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
           TextButton(
@@ -75,6 +76,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
+  String _defaultSortForMode(String id) {
+    switch (id) {
+      case 'quick_prep': return 'not_done';
+      case 'weak_areas': return 'score_low';
+      default:           return 'importance';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -87,10 +96,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
 
-              // ── Learning Mode Dropdown ────────────────────────────────
+              // ── Learning Mode ─────────────────────────────────────────
               _sectionTitle('Learning Mode'),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                 decoration: BoxDecoration(
                   color: AppTheme.white,
                   borderRadius: BorderRadius.circular(12),
@@ -101,26 +110,68 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     value: _learningModeId,
                     isExpanded: true,
                     icon: const Icon(Icons.keyboard_arrow_down, color: AppTheme.canadianRed),
+                    selectedItemBuilder: (context) => LearningModes.all.map((mode) =>
+                      // Compact selected view — no overflow
+                      Row(children: [
+                        Container(
+                          width: 32, height: 32,
+                          decoration: BoxDecoration(
+                            color: mode.color.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Icon(mode.icon, color: mode.color, size: 16),
+                        ),
+                        const SizedBox(width: 10),
+                        Text(mode.title,
+                            style: const TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                              color: AppTheme.darkGrey,
+                            )),
+                      ]),
+                    ).toList(),
                     items: LearningModes.all.map((mode) => DropdownMenuItem(
                       value: mode.id,
-                      child: Row(children: [
-                        Container(
-                          width: 36, height: 36,
-                          decoration: BoxDecoration(color: mode.color.withOpacity(0.1), borderRadius: BorderRadius.circular(8)),
-                          child: Icon(mode.icon, color: mode.color, size: 18),
-                        ),
-                        const SizedBox(width: 12),
-                        Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                          Text(mode.title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: AppTheme.darkGrey)),
-                          Text(mode.description, style: const TextStyle(fontSize: 11, color: AppTheme.mediumGrey)),
-                        ]),
-                      ]),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(mode.title,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14,
+                                color: AppTheme.darkGrey,
+                              )),
+                          Text(mode.description,
+                              style: const TextStyle(
+                                fontSize: 11,
+                                color: AppTheme.mediumGrey,
+                              )),
+                        ],
+                      ),
                     )).toList(),
                     onChanged: (id) async {
                       if (id == null) return;
+                      final pinned = await StorageService.getPinnedSort();
+                      final defaultSort = _defaultSortForMode(id);
+                      if (pinned != 'importance' && pinned != defaultSort) {
+                        final reset = await showDialog<bool>(
+                          context: context,
+                          builder: (_) => AlertDialog(
+                            title: const Text('Change Sort Order?'),
+                            content: const Text('You have a custom sort pinned. Reset to the recommended sort for this mode?'),
+                            actions: [
+                              TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Keep Mine')),
+                              TextButton(onPressed: () => Navigator.pop(context, true), child: const Text('Reset', style: TextStyle(color: AppTheme.canadianRed))),
+                            ],
+                          ),
+                        );
+                        if (reset == true) await StorageService.setPinnedSort(defaultSort);
+                      } else {
+                        await StorageService.setPinnedSort(defaultSort);
+                      }
                       await StorageService.setLearningMode(id);
                       setState(() => _learningModeId = id);
-                      // Prompt exam date if switching to exam focus
                       if (id == 'exam_focus' && _examDate == null) {
                         await _pickExamDate();
                       }
@@ -139,77 +190,137 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(color: AppTheme.lightGrey, width: 1.5),
                 ),
-                child: Row(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Container(
-                      width: 44, height: 44,
-                      decoration: BoxDecoration(color: AppTheme.canadianRed.withOpacity(0.1), borderRadius: BorderRadius.circular(10)),
-                      child: const Icon(Icons.calendar_today, color: AppTheme.canadianRed, size: 22),
+                    Row(
+                      children: [
+                        Container(
+                          width: 44, height: 44,
+                          decoration: BoxDecoration(
+                            color: AppTheme.canadianRed.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: const Icon(Icons.calendar_today, color: AppTheme.canadianRed, size: 22),
+                        ),
+                        const SizedBox(width: 14),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text('G1 Exam Date',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 14,
+                                    color: AppTheme.darkGrey,
+                                  )),
+                              Text(
+                                _examDate != null
+                                    ? '${_examDate!.day}/${_examDate!.month}/${_examDate!.year}  •  ${_examDate!.difference(DateTime.now()).inDays + 1} days left'
+                                    : 'Not set — tap to add',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: _examDate != null
+                                      ? AppTheme.canadianRed
+                                      : AppTheme.mediumGrey,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
-                    const SizedBox(width: 14),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text('G1 Exam Date', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: AppTheme.darkGrey)),
-                          Text(
-                            _examDate != null
-                                ? '${_examDate!.day}/${_examDate!.month}/${_examDate!.year} — ${_examDate!.difference(DateTime.now()).inDays + 1} days left'
-                                : 'Not set',
-                            style: TextStyle(fontSize: 12, color: _examDate != null ? AppTheme.canadianRed : AppTheme.mediumGrey),
+                    const SizedBox(height: 12),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: OutlinedButton.icon(
+                            onPressed: _pickExamDate,
+                            icon: const Icon(Icons.edit_calendar, size: 16),
+                            label: Text(_examDate != null ? 'Change Date' : 'Set Exam Date'),
+                            style: OutlinedButton.styleFrom(
+                              foregroundColor: AppTheme.canadianRed,
+                              side: const BorderSide(color: AppTheme.canadianRed),
+                            ),
+                          ),
+                        ),
+                        if (_examDate != null) ...[
+                          const SizedBox(width: 8),
+                          OutlinedButton(
+                            onPressed: _clearExamDate,
+                            style: OutlinedButton.styleFrom(
+                              foregroundColor: AppTheme.mediumGrey,
+                              side: const BorderSide(color: AppTheme.mediumGrey),
+                            ),
+                            child: const Text('Clear'),
                           ),
                         ],
-                      ),
-                    ),
-                    if (_examDate != null)
-                      TextButton(onPressed: _clearExamDate, child: const Text('Clear', style: TextStyle(color: AppTheme.mediumGrey, fontSize: 12))),
-                    TextButton(
-                      onPressed: _pickExamDate,
-                      child: Text(_examDate != null ? 'Change' : 'Set', style: const TextStyle(color: AppTheme.canadianRed, fontWeight: FontWeight.bold)),
+                      ],
                     ),
                   ],
                 ),
               ),
               const SizedBox(height: 24),
 
-              // ── Exam Countdown Screen ─────────────────────────────────
-              _sectionTitle('Study Tools'),
-              _settingsTile(
-                icon: Icons.calendar_today,
-                color: AppTheme.canadianRed,
-                title: 'Exam Countdown Plan',
-                subtitle: 'View your day-by-day study plan',
-                onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const ExamCountdownScreen())),
-              ),
-              const SizedBox(height: 24),
-
               // ── App ───────────────────────────────────────────────────
               _sectionTitle('App'),
-              _settingsTile(icon: Icons.info_outline, color: AppTheme.darkGrey, title: 'About G1 Ready', subtitle: 'Version 1.0.0', onTap: () => showDialog(
-                context: context,
-                builder: (_) => AlertDialog(
-                  title: const Text('About G1 Ready'),
-                  content: const Text('G1 Ready helps Ontario drivers prepare for their G1 knowledge test.\n\nGood luck on your test! 🍁'),
-                  actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text('Close', style: TextStyle(color: AppTheme.canadianRed)))],
+              _settingsTile(
+                icon: Icons.info_outline,
+                color: AppTheme.darkGrey,
+                title: 'About G1 Ready',
+                subtitle: 'Version 1.0.0',
+                onTap: () => showDialog(
+                  context: context,
+                  builder: (_) => AlertDialog(
+                    title: const Text('About G1 Ready'),
+                    content: const Text(
+                        'G1 Ready helps Ontario drivers prepare for their G1 knowledge test.\n\nGood luck on your test! 🍁'),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: const Text('Close',
+                            style: TextStyle(color: AppTheme.canadianRed)),
+                      )
+                    ],
+                  ),
                 ),
-              )),
-              _settingsTile(icon: Icons.star_outline, color: AppTheme.darkGrey, title: 'Rate the App', subtitle: 'Enjoying G1 Ready? Leave a review!', onTap: () {}),
+              ),
+              _settingsTile(
+                icon: Icons.star_outline,
+                color: AppTheme.darkGrey,
+                title: 'Rate the App',
+                subtitle: 'Enjoying G1 Ready? Leave a review!',
+                onTap: () {},
+              ),
               const SizedBox(height: 24),
 
               // ── Progress ──────────────────────────────────────────────
               _sectionTitle('Progress'),
-              _settingsTile(icon: Icons.refresh, color: AppTheme.incorrect, title: 'Reset Progress', subtitle: 'Clear all XP scores and bookmarks', onTap: _confirmReset),
+              _settingsTile(
+                icon: Icons.refresh,
+                color: AppTheme.incorrect,
+                title: 'Reset Progress',
+                subtitle: 'Clear all XP, scores and bookmarks',
+                onTap: _confirmReset,
+              ),
               const SizedBox(height: 40),
 
+              // Footer
               Center(
                 child: Column(children: [
                   const Icon(Icons.drive_eta, size: 48, color: AppTheme.canadianRed),
                   const SizedBox(height: 8),
-                  const Text('G1 Ready 🍁', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppTheme.canadianRed)),
+                  const Text('G1 Ready 🍁',
+                      style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: AppTheme.canadianRed)),
                   const SizedBox(height: 4),
-                  const Text('Ontario Driver\'s Test Prep', style: TextStyle(fontSize: 13, color: AppTheme.mediumGrey)),
+                  const Text('Ontario Driver\'s Test Prep',
+                      style: TextStyle(fontSize: 13, color: AppTheme.mediumGrey)),
                   const SizedBox(height: 4),
-                  const Text('Version 1.0.0', style: TextStyle(fontSize: 12, color: AppTheme.mediumGrey)),
+                  const Text('Version 1.0.0',
+                      style: TextStyle(fontSize: 12, color: AppTheme.mediumGrey)),
                 ]),
               ),
               const SizedBox(height: 20),
@@ -220,12 +331,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  Widget _sectionTitle(String title) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 10),
-      child: Text(title, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: AppTheme.mediumGrey)),
-    );
-  }
+  Widget _sectionTitle(String title) => Padding(
+    padding: const EdgeInsets.only(bottom: 10),
+    child: Text(title,
+        style: const TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.bold,
+            color: AppTheme.mediumGrey)),
+  );
 
   Widget _settingsTile({
     required IconData icon,
@@ -233,17 +346,24 @@ class _SettingsScreenState extends State<SettingsScreen> {
     required String title,
     required String subtitle,
     required VoidCallback onTap,
-  }) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 8),
-      decoration: BoxDecoration(color: AppTheme.white, borderRadius: BorderRadius.circular(12), border: Border.all(color: AppTheme.lightGrey, width: 1.5)),
-      child: ListTile(
-        leading: Icon(icon, color: color),
-        title: Text(title, style: TextStyle(fontWeight: FontWeight.w600, color: color)),
-        subtitle: Text(subtitle, style: const TextStyle(fontSize: 12, color: AppTheme.mediumGrey)),
-        trailing: const Icon(Icons.arrow_forward_ios, size: 14, color: AppTheme.mediumGrey),
-        onTap: onTap,
-      ),
-    );
-  }
+  }) =>
+      Container(
+        margin: const EdgeInsets.only(bottom: 8),
+        decoration: BoxDecoration(
+          color: AppTheme.white,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: AppTheme.lightGrey, width: 1.5),
+        ),
+        child: ListTile(
+          leading: Icon(icon, color: color),
+          title: Text(title,
+              style: TextStyle(fontWeight: FontWeight.w600, color: color)),
+          subtitle: Text(subtitle,
+              style: const TextStyle(fontSize: 12, color: AppTheme.mediumGrey)),
+          trailing: const Icon(Icons.arrow_forward_ios,
+              size: 14, color: AppTheme.mediumGrey),
+          onTap: onTap,
+        ),
+      );
 }
+
