@@ -1,0 +1,76 @@
+﻿name: Sync G1 Ready question pool from Drive
+
+on:
+  schedule:
+    - cron: '0 9 1 1,4,7,10 *'   # 09:00 UTC on Jan/Apr/Jul/Oct 1st — matches the quarterly refresh
+  workflow_dispatch: {}          # adds a manual "Run workflow" button too
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Google API client
+        run: pip install google-api-python-client google-auth
+
+      - name: Fetch latest question pool from Drive
+        env:
+          GDRIVE_SA_KEY: ${{ secrets.GDRIVE_SA_KEY }}
+          GDRIVE_FOLDER_ID: '1o1HlPiUk7cz2nNzRyXxvaQizTuHcB_WT'
+        run: |
+          python - <<'PYEOF'
+          import os, json, base64
+          from googleapiclient.discovery import build
+          from google.oauth2 import service_account
+
+          key_raw = os.environ['GDRIVE_SA_KEY']
+          # secret can be pasted as raw JSON or base64-encoded JSON; handle both
+          try:
+              info = json.loads(key_raw)
+          except json.JSONDecodeError:
+              info = json.loads(base64.b64decode(key_raw))
+
+          creds = service_account.Credentials.from_service_account_info(
+              info, scopes=['https://www.googleapis.com/auth/drive.readonly']
+          )
+          drive = build('drive', 'v3', credentials=creds)
+
+          folder_id = os.environ['GDRIVE_FOLDER_ID']
+          results = drive.files().list(
+              q=f"'{folder_id}' in parents and name contains 'g1_questions_pool' and trashed = false",
+              orderBy='createdTime desc',
+              pageSize=1,
+              fields='files(id, name, createdTime)'
+          ).execute()
+
+          files = results.get('files', [])
+          if not files:
+              raise SystemExit('No g1_questions_pool file found in the Drive folder')
+
+          latest = files[0]
+          print(f"Latest file: {latest['name']} ({latest['id']}, created {latest['createdTime']})")
+
+          content = drive.files().get_media(fileId=latest['id']).execute()
+
+          os.makedirs('content', exist_ok=True)
+          with open('content/g1_questions_pool.json', 'wb') as f:
+              f.write(content)
+          PYEOF
+
+      - name: Commit and push if changed
+        run: |
+          git config user.name "g1-ready-bot"
+          git config user.email "actions@github.com"
+          git add content/g1_questions_pool.json
+          git diff --cached --quiet && echo "No changes to commit" || git commit -m "Sync question pool from Drive ($(date -u +%Y-%m-%d))"
+          git push
