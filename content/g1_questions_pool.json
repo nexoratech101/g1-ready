@@ -1,411 +1,56 @@
 ﻿{
   "meta": {
     "app": "G1 Ready",
-    "pool_version": "1.1",
+    "pool_version": "1.2",
     "last_updated": "2026-07-07",
-    "total_questions": 25,
-    "notes": "Quarterly content refresh: added 20 new questions (G1-0006 to G1-0025) per content refresh schedule. IDs continue sequentially from G1-0001."
+    "total_questions": 45,
+    "notes": "On-demand refresh: added 20 new questions (G1-0026 to G1-0045). IDs continue sequentially from G1-0001."
   },
   "questions": [
-    {
-      "id": "G1-0001",
-      "set": 1,
-      "set_name": "Traffic Control",
-      "level": "core",
-      "question": "You are approaching an intersection with a steady red traffic light and no sign prohibiting turns. What must you do before turning right on the red light?",
-      "options": [
-        "Slow down and turn without stopping if no cars are coming",
-        "Come to a complete stop, check for pedestrians and cross traffic, then turn if it is safe",
-        "Sound your horn and proceed through the intersection",
-        "Wait for a green arrow before turning"
-      ],
-      "answer": 1,
-      "explanation": "Unless a sign specifically prohibits it, drivers may turn right on a red light in Ontario, but only after coming to a complete stop and yielding to pedestrians and cross traffic.",
-      "premium": false
-    },
-    {
-      "id": "G1-0002",
-      "set": 2,
-      "set_name": "Speed & Space",
-      "level": "core",
-      "question": "On a dry road in good conditions, how much following distance should you keep behind the vehicle ahead of you?",
-      "options": [
-        "At least a 1-second gap",
-        "At least a 2-second gap",
-        "At least a 5-second gap",
-        "One car length for every 10 km/h of speed"
-      ],
-      "answer": 1,
-      "explanation": "The 2-second rule is the minimum safe following distance in good conditions; it should be increased in poor weather, low visibility, or when following larger vehicles.",
-      "premium": false
-    },
-    {
-      "id": "G1-0003",
-      "set": 3,
-      "set_name": "Alcohol & Drugs",
-      "level": "core",
-      "question": "As a G1 driver in Ontario, what blood alcohol concentration (BAC) limit applies to you?",
-      "options": [
-        "0.08%, the same as fully licensed drivers",
-        "0.05%",
-        "Zero tolerance — you must have no alcohol in your system",
-        "0.10%"
-      ],
-      "answer": 2,
-      "explanation": "Novice drivers in Ontario's Graduated Licensing System (G1 and G2) are subject to a zero blood alcohol concentration requirement, regardless of age.",
-      "premium": false
-    },
-    {
-      "id": "G1-0004",
-      "set": 4,
-      "set_name": "Vulnerable Road Users",
-      "level": "core",
-      "question": "You are driving on a two-way road with no median. A school bus ahead has stopped with its upper alternating red lights flashing. What must you do?",
-      "options": [
-        "Slow down and pass carefully",
-        "Stop, regardless of which direction you are travelling, and wait until the lights stop flashing",
-        "Only stop if you are behind the bus",
-        "Proceed if there are no children visible"
-      ],
-      "answer": 1,
-      "explanation": "On roads without a median, traffic in both directions must stop for a school bus with flashing upper red lights and remain stopped until the lights stop flashing and the bus resumes moving.",
-      "premium": false
-    },
-    {
-      "id": "G1-0005",
-      "set": 7,
-      "set_name": "Road Signs",
-      "level": "core",
-      "question": "What is the purpose of a yellow, diamond-shaped road sign?",
-      "options": [
-        "To give a regulatory command that must be obeyed",
-        "To warn drivers of a hazard or a change in road conditions ahead",
-        "To provide information about services such as gas or food",
-        "To mark a construction zone"
-      ],
-      "answer": 1,
-      "explanation": "Yellow diamond-shaped signs are warning signs, alerting drivers to hazards or changes ahead such as curves, merges, or pedestrian crossings.",
-      "premium": false
-    },
-    {
-      "id": "G1-0006",
-      "set": 1,
-      "set_name": "Traffic Control",
-      "level": "core",
-      "question": "At some Ontario intersections, what does a flashing green traffic light mean for the driver facing it?",
-      "options": [
-        "You may proceed straight through or turn left while oncoming traffic is stopped on red (advance green)",
-        "It is exactly the same as a steady green light with no special meaning",
-        "Left turns are prohibited until the light stops flashing",
-        "Only pedestrians may proceed; vehicles must wait"
-      ],
-      "answer": 0,
-      "explanation": "A flashing green signal is used at certain intersections to indicate an advance green: the driver facing it may go straight or turn left while opposing traffic still faces a red light.",
-      "premium": false
-    },
-    {
-      "id": "G1-0007",
-      "set": 1,
-      "set_name": "Traffic Control",
-      "level": "core",
-      "question": "You arrive at a four-way stop at the same time as another vehicle approaching from your right. Who has the right-of-way?",
-      "options": [
-        "You, because you must always proceed first at a four-way stop",
-        "The vehicle on your right",
-        "Whichever vehicle is larger",
-        "Whoever signals or honks first"
-      ],
-      "answer": 1,
-      "explanation": "When two vehicles arrive at an uncontrolled or all-way stop intersection at the same time, the vehicle on the right has the right-of-way.",
-      "premium": false
-    },
-    {
-      "id": "G1-0008",
-      "set": 1,
-      "set_name": "Traffic Control",
-      "level": "important",
-      "question": "When entering a roundabout in Ontario, who must you yield to?",
-      "options": [
-        "Traffic already circulating in the roundabout",
-        "Traffic waiting to enter behind you",
-        "Only pedestrians, not other vehicles",
-        "No one — entry is on a first-come, first-served basis regardless of position"
-      ],
-      "answer": 0,
-      "explanation": "Drivers entering a roundabout must yield to vehicles and cyclists already circulating within it before merging in.",
-      "premium": false
-    },
-    {
-      "id": "G1-0009",
-      "set": 2,
-      "set_name": "Speed & Space",
-      "level": "core",
-      "question": "In poor weather such as heavy rain, snow, or fog, how should you adjust your following distance?",
-      "options": [
-        "Keep exactly the standard 2-second gap",
-        "Increase your following distance well beyond the standard 2-second gap",
-        "Decrease your distance so you can see the road better",
-        "No adjustment is needed if your vehicle has good tires"
-      ],
-      "answer": 1,
-      "explanation": "Stopping distances increase significantly in poor weather, so you should increase your following distance beyond the normal 2-second gap.",
-      "premium": false
-    },
-    {
-      "id": "G1-0010",
-      "set": 2,
-      "set_name": "Speed & Space",
-      "level": "core",
-      "question": "In a designated community safety zone, what happens to fines for speeding and other traffic offences?",
-      "options": [
-        "Fines are reduced to encourage compliance",
-        "Fines are doubled",
-        "Fines stay exactly the same as elsewhere",
-        "Only verbal warnings are issued, never fines"
-      ],
-      "answer": 1,
-      "explanation": "Community safety zones are areas, often near schools or playgrounds, where fines for speeding and other offences are doubled to improve safety for pedestrians.",
-      "premium": false
-    },
-    {
-      "id": "G1-0011",
-      "set": 2,
-      "set_name": "Speed & Space",
-      "level": "important",
-      "question": "What is hydroplaning and when is it most likely to occur?",
-      "options": [
-        "Loss of tire traction with the road due to a film of water, most likely at higher speeds in heavy rain",
-        "Loss of traction that only happens on icy roads",
-        "The engine stalling after driving through deep water",
-        "A tire blowout caused by hitting a pothole"
-      ],
-      "answer": 0,
-      "explanation": "Hydroplaning happens when tires ride on a layer of water instead of the road surface, causing loss of steering and braking control; it is more likely at higher speeds and in heavy rain.",
-      "premium": false
-    },
-    {
-      "id": "G1-0012",
-      "set": 3,
-      "set_name": "Alcohol & Drugs",
-      "level": "important",
-      "question": "What is an immediate consequence for a novice (G1/G2) driver caught with any amount of alcohol in their blood?",
-      "options": [
-        "A verbal warning only, for a first offence",
-        "An immediate roadside licence suspension",
-        "A fine only, with no licence suspension",
-        "A deduction of 2 demerit points and nothing else"
-      ],
-      "answer": 1,
-      "explanation": "Because novice drivers must maintain zero blood alcohol concentration, being caught with any alcohol in their system results in an immediate roadside licence suspension in addition to other penalties.",
-      "premium": false
-    },
-    {
-      "id": "G1-0013",
-      "set": 3,
-      "set_name": "Alcohol & Drugs",
-      "level": "unusual",
-      "question": "How can combining alcohol with certain drugs, including some common medications, affect a driver's impairment?",
-      "options": [
-        "The two substances cancel out each other's effects",
-        "There is no additional effect beyond alcohol alone",
-        "The combination can multiply impairment far beyond what either substance would cause alone",
-        "It only affects reaction time and has no effect on judgment"
-      ],
-      "answer": 2,
-      "explanation": "Mixing alcohol with drugs, including many prescription and over-the-counter medications, can multiply impairing effects, making driving far more dangerous than either substance alone.",
-      "premium": false
-    },
-    {
-      "id": "G1-0014",
-      "set": 4,
-      "set_name": "Vulnerable Road Users",
-      "level": "core",
-      "question": "When passing a cyclist on an Ontario road where a minimum distance is required by law, how much space must you leave?",
-      "options": [
-        "At least 1 metre",
-        "No specific distance is required anywhere in Ontario",
-        "At least 3 metres in every case",
-        "Only need to slow down; no distance requirement applies"
-      ],
-      "answer": 0,
-      "explanation": "Ontario law requires drivers to leave a minimum distance, at least one metre, when passing a cyclist where road and traffic conditions allow.",
-      "premium": false
-    },
-    {
-      "id": "G1-0015",
-      "set": 4,
-      "set_name": "Vulnerable Road Users",
-      "level": "core",
-      "question": "A pedestrian is crossing at a marked crosswalk with no traffic signals. What must a driver do?",
-      "options": [
-        "Stop and yield until the pedestrian has fully cleared the driver's lane",
-        "Only slow down and proceed carefully",
-        "Proceed once the pedestrian is halfway across",
-        "Sound the horn to signal the pedestrian to hurry"
-      ],
-      "answer": 0,
-      "explanation": "Drivers must stop and remain stopped for a pedestrian in a marked crosswalk until the pedestrian has completely cleared the driver's lane of travel.",
-      "premium": false
-    },
-    {
-      "id": "G1-0016",
-      "set": 4,
-      "set_name": "Vulnerable Road Users",
-      "level": "important",
-      "question": "Before opening your car door after parking on a street used by cyclists, what should you do to avoid a 'dooring' collision?",
-      "options": [
-        "Open the door quickly to minimize the time it is exposed to traffic",
-        "Check your mirrors and look over your shoulder for approaching cyclists before opening the door",
-        "Nothing extra is needed as long as you are legally parked",
-        "Only the front passenger needs to check for cyclists"
-      ],
-      "answer": 1,
-      "explanation": "Drivers and passengers should check mirrors and look over their shoulder for cyclists before opening a door, to avoid causing a dooring collision.",
-      "premium": false
-    },
-    {
-      "id": "G1-0017",
-      "set": 5,
-      "set_name": "Parking & Stopping",
-      "level": "core",
-      "question": "Unless otherwise posted, how close to a fire hydrant are you permitted to park?",
-      "options": [
-        "Within 1 metre",
-        "You may not park within 3 metres of a fire hydrant",
-        "Directly beside it, as long as your hazard lights are on",
-        "Within 10 centimetres, since exact spacing doesn't matter"
-      ],
-      "answer": 1,
-      "explanation": "Drivers generally may not park within 3 metres of a fire hydrant, so that firefighters have clear access in an emergency.",
-      "premium": false
-    },
-    {
-      "id": "G1-0018",
-      "set": 5,
-      "set_name": "Parking & Stopping",
-      "level": "important",
-      "question": "When parking on a hill with no curb, facing downhill, which direction should you turn your front wheels?",
-      "options": [
-        "To the right, off the roadway",
-        "To the left, toward the centre line and oncoming traffic",
-        "Straight ahead, the same as on flat ground",
-        "It doesn't matter as long as the parking brake is applied"
-      ],
-      "answer": 0,
-      "explanation": "With no curb, turning the front wheels to the right means that if the vehicle rolls, it moves off the road and away from traffic rather than into it.",
-      "premium": false
-    },
-    {
-      "id": "G1-0019",
-      "set": 6,
-      "set_name": "Highway & Expressway",
-      "level": "core",
-      "question": "When merging onto a highway from an acceleration lane (on-ramp), what should you do?",
-      "options": [
-        "Stop at the end of the ramp and wait for a large gap in traffic",
-        "Match the speed of highway traffic and merge smoothly when there is a safe gap",
-        "Merge immediately regardless of the traffic already on the highway",
-        "Drive slowly until another driver waves you in"
-      ],
-      "answer": 1,
-      "explanation": "The acceleration lane is meant to let you build up speed to match highway traffic, so you can merge smoothly into a safe gap rather than stopping or forcing your way in.",
-      "premium": false
-    },
-    {
-      "id": "G1-0020",
-      "set": 6,
-      "set_name": "Highway & Expressway",
-      "level": "important",
-      "question": "On a typical Ontario highway, is there a minimum speed requirement for drivers?",
-      "options": [
-        "No, you may drive as slowly as you like at any time",
-        "Yes, drivers must not drive so slowly that they block the normal, reasonable movement of traffic, except when necessary for safety",
-        "The minimum speed is always exactly 80 km/h",
-        "Minimum speed rules apply only to commercial trucks"
-      ],
-      "answer": 1,
-      "explanation": "Ontario law prohibits driving at a speed that unreasonably blocks or slows the normal movement of traffic, unless doing so is necessary for safety.",
-      "premium": false
-    },
-    {
-      "id": "G1-0021",
-      "set": 6,
-      "set_name": "Highway & Expressway",
-      "level": "unusual",
-      "question": "If you miss your intended exit on an expressway, what should you do?",
-      "options": [
-        "Stop and reverse along the shoulder back to the exit",
-        "Continue on to the next exit and find another way back",
-        "Cross the median to turn around",
-        "Pull onto the shoulder and wait for a gap to merge back to the exit"
-      ],
-      "answer": 1,
-      "explanation": "You should never stop, reverse, or cross a median on an expressway. If you miss your exit, continue safely to the next exit and reroute from there.",
-      "premium": false
-    },
-    {
-      "id": "G1-0022",
-      "set": 7,
-      "set_name": "Road Signs",
-      "level": "core",
-      "question": "What shape is reserved exclusively for stop signs in Ontario, so they remain recognizable from any angle?",
-      "options": [
-        "Diamond",
-        "Octagon",
-        "Triangle",
-        "Rectangle"
-      ],
-      "answer": 1,
-      "explanation": "The octagon shape is used only for stop signs, allowing drivers, and even drivers approaching from behind or in poor visibility, to recognize them by shape alone.",
-      "premium": false
-    },
-    {
-      "id": "G1-0023",
-      "set": 7,
-      "set_name": "Road Signs",
-      "level": "important",
-      "question": "What colour and shape are typically used for temporary construction or work zone warning signs in Ontario?",
-      "options": [
-        "Yellow diamond",
-        "Orange diamond",
-        "Blue rectangle",
-        "Green circle"
-      ],
-      "answer": 1,
-      "explanation": "Orange diamond-shaped signs are used to indicate construction or maintenance zones, distinguishing them from standard yellow warning signs used for permanent hazards.",
-      "premium": false
-    },
-    {
-      "id": "G1-0024",
-      "set": 8,
-      "set_name": "Special Conditions",
-      "level": "core",
-      "question": "When driving in winter conditions with snow or ice on the road, how should you adjust your driving compared to dry conditions?",
-      "options": [
-        "Reduce your speed and increase your following distance well beyond the normal 2-second rule",
-        "Maintain your normal speed but simply brake a little earlier",
-        "Drive faster to maintain momentum on hills and avoid getting stuck",
-        "No adjustment is needed if your vehicle has winter tires"
-      ],
-      "answer": 0,
-      "explanation": "Snow and ice greatly increase stopping distances, so drivers should reduce speed and significantly increase following distance beyond the normal 2-second rule.",
-      "premium": false
-    },
-    {
-      "id": "G1-0025",
-      "set": 8,
-      "set_name": "Special Conditions",
-      "level": "core",
-      "question": "When an oncoming vehicle approaches at night, when should you dim your high-beam headlights?",
-      "options": [
-        "When it is within about 150 metres",
-        "Only if the other driver flashes their lights first",
-        "Never — high beams should stay on for maximum visibility",
-        "Only when driving in fog"
-      ],
-      "answer": 0,
-      "explanation": "Drivers should dim their high beams when an oncoming vehicle is within about 150 metres, to avoid blinding the other driver.",
-      "premium": false
-    }
+    {"id": "G1-0001", "set": 1, "set_name": "Traffic Control", "level": "core", "question": "You are approaching an intersection with a steady red traffic light and no sign prohibiting turns. What must you do before turning right on the red light?", "options": ["Slow down and turn without stopping if no cars are coming", "Come to a complete stop, check for pedestrians and cross traffic, then turn if it is safe", "Sound your horn and proceed through the intersection", "Wait for a green arrow before turning"], "answer": 1, "explanation": "Unless a sign specifically prohibits it, drivers may turn right on a red light in Ontario, but only after coming to a complete stop and yielding to pedestrians and cross traffic.", "premium": false},
+    {"id": "G1-0002", "set": 2, "set_name": "Speed & Space", "level": "core", "question": "On a dry road in good conditions, how much following distance should you keep behind the vehicle ahead of you?", "options": ["At least a 1-second gap", "At least a 2-second gap", "At least a 5-second gap", "One car length for every 10 km/h of speed"], "answer": 1, "explanation": "The 2-second rule is the minimum safe following distance in good conditions; it should be increased in poor weather, low visibility, or when following larger vehicles.", "premium": false},
+    {"id": "G1-0003", "set": 3, "set_name": "Alcohol & Drugs", "level": "core", "question": "As a G1 driver in Ontario, what blood alcohol concentration (BAC) limit applies to you?", "options": ["0.08%, the same as fully licensed drivers", "0.05%", "Zero tolerance — you must have no alcohol in your system", "0.10%"], "answer": 2, "explanation": "Novice drivers in Ontario's Graduated Licensing System (G1 and G2) are subject to a zero blood alcohol concentration requirement, regardless of age.", "premium": false},
+    {"id": "G1-0004", "set": 4, "set_name": "Vulnerable Road Users", "level": "core", "question": "You are driving on a two-way road with no median. A school bus ahead has stopped with its upper alternating red lights flashing. What must you do?", "options": ["Slow down and pass carefully", "Stop, regardless of which direction you are travelling, and wait until the lights stop flashing", "Only stop if you are behind the bus", "Proceed if there are no children visible"], "answer": 1, "explanation": "On roads without a median, traffic in both directions must stop for a school bus with flashing upper red lights and remain stopped until the lights stop flashing and the bus resumes moving.", "premium": false},
+    {"id": "G1-0005", "set": 7, "set_name": "Road Signs", "level": "core", "question": "What is the purpose of a yellow, diamond-shaped road sign?", "options": ["To give a regulatory command that must be obeyed", "To warn drivers of a hazard or a change in road conditions ahead", "To provide information about services such as gas or food", "To mark a construction zone"], "answer": 1, "explanation": "Yellow diamond-shaped signs are warning signs, alerting drivers to hazards or changes ahead such as curves, merges, or pedestrian crossings.", "premium": false},
+    {"id": "G1-0006", "set": 1, "set_name": "Traffic Control", "level": "core", "question": "At some Ontario intersections, what does a flashing green traffic light mean for the driver facing it?", "options": ["You may proceed straight through or turn left while oncoming traffic is stopped on red (advance green)", "It is exactly the same as a steady green light with no special meaning", "Left turns are prohibited until the light stops flashing", "Only pedestrians may proceed; vehicles must wait"], "answer": 0, "explanation": "A flashing green signal is used at certain intersections to indicate an advance green: the driver facing it may go straight or turn left while opposing traffic still faces a red light.", "premium": false},
+    {"id": "G1-0007", "set": 1, "set_name": "Traffic Control", "level": "core", "question": "You arrive at a four-way stop at the same time as another vehicle approaching from your right. Who has the right-of-way?", "options": ["You, because you must always proceed first at a four-way stop", "The vehicle on your right", "Whichever vehicle is larger", "Whoever signals or honks first"], "answer": 1, "explanation": "When two vehicles arrive at an uncontrolled or all-way stop intersection at the same time, the vehicle on the right has the right-of-way.", "premium": false},
+    {"id": "G1-0008", "set": 1, "set_name": "Traffic Control", "level": "important", "question": "When entering a roundabout in Ontario, who must you yield to?", "options": ["Traffic already circulating in the roundabout", "Traffic waiting to enter behind you", "Only pedestrians, not other vehicles", "No one — entry is on a first-come, first-served basis regardless of position"], "answer": 0, "explanation": "Drivers entering a roundabout must yield to vehicles and cyclists already circulating within it before merging in.", "premium": false},
+    {"id": "G1-0009", "set": 2, "set_name": "Speed & Space", "level": "core", "question": "In poor weather such as heavy rain, snow, or fog, how should you adjust your following distance?", "options": ["Keep exactly the standard 2-second gap", "Increase your following distance well beyond the standard 2-second gap", "Decrease your distance so you can see the road better", "No adjustment is needed if your vehicle has good tires"], "answer": 1, "explanation": "Stopping distances increase significantly in poor weather, so you should increase your following distance beyond the normal 2-second gap.", "premium": false},
+    {"id": "G1-0010", "set": 2, "set_name": "Speed & Space", "level": "core", "question": "In a designated community safety zone, what happens to fines for speeding and other traffic offences?", "options": ["Fines are reduced to encourage compliance", "Fines are doubled", "Fines stay exactly the same as elsewhere", "Only verbal warnings are issued, never fines"], "answer": 1, "explanation": "Community safety zones are areas, often near schools or playgrounds, where fines for speeding and other offences are doubled to improve safety for pedestrians.", "premium": false},
+    {"id": "G1-0011", "set": 2, "set_name": "Speed & Space", "level": "important", "question": "What is hydroplaning and when is it most likely to occur?", "options": ["Loss of tire traction with the road due to a film of water, most likely at higher speeds in heavy rain", "Loss of traction that only happens on icy roads", "The engine stalling after driving through deep water", "A tire blowout caused by hitting a pothole"], "answer": 0, "explanation": "Hydroplaning happens when tires ride on a layer of water instead of the road surface, causing loss of steering and braking control; it is more likely at higher speeds and in heavy rain.", "premium": false},
+    {"id": "G1-0012", "set": 3, "set_name": "Alcohol & Drugs", "level": "important", "question": "What is an immediate consequence for a novice (G1/G2) driver caught with any amount of alcohol in their blood?", "options": ["A verbal warning only, for a first offence", "An immediate roadside licence suspension", "A fine only, with no licence suspension", "A deduction of 2 demerit points and nothing else"], "answer": 1, "explanation": "Because novice drivers must maintain zero blood alcohol concentration, being caught with any alcohol in their system results in an immediate roadside licence suspension in addition to other penalties.", "premium": false},
+    {"id": "G1-0013", "set": 3, "set_name": "Alcohol & Drugs", "level": "unusual", "question": "How can combining alcohol with certain drugs, including some common medications, affect a driver's impairment?", "options": ["The two substances cancel out each other's effects", "There is no additional effect beyond alcohol alone", "The combination can multiply impairment far beyond what either substance would cause alone", "It only affects reaction time and has no effect on judgment"], "answer": 2, "explanation": "Mixing alcohol with drugs, including many prescription and over-the-counter medications, can multiply impairing effects, making driving far more dangerous than either substance alone.", "premium": false},
+    {"id": "G1-0014", "set": 4, "set_name": "Vulnerable Road Users", "level": "core", "question": "When passing a cyclist on an Ontario road where a minimum distance is required by law, how much space must you leave?", "options": ["At least 1 metre", "No specific distance is required anywhere in Ontario", "At least 3 metres in every case", "Only need to slow down; no distance requirement applies"], "answer": 0, "explanation": "Ontario law requires drivers to leave a minimum distance, at least one metre, when passing a cyclist where road and traffic conditions allow.", "premium": false},
+    {"id": "G1-0015", "set": 4, "set_name": "Vulnerable Road Users", "level": "core", "question": "A pedestrian is crossing at a marked crosswalk with no traffic signals. What must a driver do?", "options": ["Stop and yield until the pedestrian has fully cleared the driver's lane", "Only slow down and proceed carefully", "Proceed once the pedestrian is halfway across", "Sound the horn to signal the pedestrian to hurry"], "answer": 0, "explanation": "Drivers must stop and remain stopped for a pedestrian in a marked crosswalk until the pedestrian has completely cleared the driver's lane of travel.", "premium": false},
+    {"id": "G1-0016", "set": 4, "set_name": "Vulnerable Road Users", "level": "important", "question": "Before opening your car door after parking on a street used by cyclists, what should you do to avoid a 'dooring' collision?", "options": ["Open the door quickly to minimize the time it is exposed to traffic", "Check your mirrors and look over your shoulder for approaching cyclists before opening the door", "Nothing extra is needed as long as you are legally parked", "Only the front passenger needs to check for cyclists"], "answer": 1, "explanation": "Drivers and passengers should check mirrors and look over their shoulder for cyclists before opening a door, to avoid causing a dooring collision.", "premium": false},
+    {"id": "G1-0017", "set": 5, "set_name": "Parking & Stopping", "level": "core", "question": "Unless otherwise posted, how close to a fire hydrant are you permitted to park?", "options": ["Within 1 metre", "You may not park within 3 metres of a fire hydrant", "Directly beside it, as long as your hazard lights are on", "Within 10 centimetres, since exact spacing doesn't matter"], "answer": 1, "explanation": "Drivers generally may not park within 3 metres of a fire hydrant, so that firefighters have clear access in an emergency.", "premium": false},
+    {"id": "G1-0018", "set": 5, "set_name": "Parking & Stopping", "level": "important", "question": "When parking on a hill with no curb, facing downhill, which direction should you turn your front wheels?", "options": ["To the right, off the roadway", "To the left, toward the centre line and oncoming traffic", "Straight ahead, the same as on flat ground", "It doesn't matter as long as the parking brake is applied"], "answer": 0, "explanation": "With no curb, turning the front wheels to the right means that if the vehicle rolls, it moves off the road and away from traffic rather than into it.", "premium": false},
+    {"id": "G1-0019", "set": 6, "set_name": "Highway & Expressway", "level": "core", "question": "When merging onto a highway from an acceleration lane (on-ramp), what should you do?", "options": ["Stop at the end of the ramp and wait for a large gap in traffic", "Match the speed of highway traffic and merge smoothly when there is a safe gap", "Merge immediately regardless of the traffic already on the highway", "Drive slowly until another driver waves you in"], "answer": 1, "explanation": "The acceleration lane is meant to let you build up speed to match highway traffic, so you can merge smoothly into a safe gap rather than stopping or forcing your way in.", "premium": false},
+    {"id": "G1-0020", "set": 6, "set_name": "Highway & Expressway", "level": "important", "question": "On a typical Ontario highway, is there a minimum speed requirement for drivers?", "options": ["No, you may drive as slowly as you like at any time", "Yes, drivers must not drive so slowly that they block the normal, reasonable movement of traffic, except when necessary for safety", "The minimum speed is always exactly 80 km/h", "Minimum speed rules apply only to commercial trucks"], "answer": 1, "explanation": "Ontario law prohibits driving at a speed that unreasonably blocks or slows the normal movement of traffic, unless doing so is necessary for safety.", "premium": false},
+    {"id": "G1-0021", "set": 6, "set_name": "Highway & Expressway", "level": "unusual", "question": "If you miss your intended exit on an expressway, what should you do?", "options": ["Stop and reverse along the shoulder back to the exit", "Continue on to the next exit and find another way back", "Cross the median to turn around", "Pull onto the shoulder and wait for a gap to merge back to the exit"], "answer": 1, "explanation": "You should never stop, reverse, or cross a median on an expressway. If you miss your exit, continue safely to the next exit and reroute from there.", "premium": false},
+    {"id": "G1-0022", "set": 7, "set_name": "Road Signs", "level": "core", "question": "What shape is reserved exclusively for stop signs in Ontario, so they remain recognizable from any angle?", "options": ["Diamond", "Octagon", "Triangle", "Rectangle"], "answer": 1, "explanation": "The octagon shape is used only for stop signs, allowing drivers, and even drivers approaching from behind or in poor visibility, to recognize them by shape alone.", "premium": false},
+    {"id": "G1-0023", "set": 7, "set_name": "Road Signs", "level": "important", "question": "What colour and shape are typically used for temporary construction or work zone warning signs in Ontario?", "options": ["Yellow diamond", "Orange diamond", "Blue rectangle", "Green circle"], "answer": 1, "explanation": "Orange diamond-shaped signs are used to indicate construction or maintenance zones, distinguishing them from standard yellow warning signs used for permanent hazards.", "premium": false},
+    {"id": "G1-0024", "set": 8, "set_name": "Special Conditions", "level": "core", "question": "When driving in winter conditions with snow or ice on the road, how should you adjust your driving compared to dry conditions?", "options": ["Reduce your speed and increase your following distance well beyond the normal 2-second rule", "Maintain your normal speed but simply brake a little earlier", "Drive faster to maintain momentum on hills and avoid getting stuck", "No adjustment is needed if your vehicle has winter tires"], "answer": 0, "explanation": "Snow and ice greatly increase stopping distances, so drivers should reduce speed and significantly increase following distance beyond the normal 2-second rule.", "premium": false},
+    {"id": "G1-0025", "set": 8, "set_name": "Special Conditions", "level": "core", "question": "When an oncoming vehicle approaches at night, when should you dim your high-beam headlights?", "options": ["When it is within about 150 metres", "Only if the other driver flashes their lights first", "Never — high beams should stay on for maximum visibility", "Only when driving in fog"], "answer": 0, "explanation": "Drivers should dim their high beams when an oncoming vehicle is within about 150 metres, to avoid blinding the other driver.", "premium": false},
+    {"id": "G1-0026", "set": 1, "set_name": "Traffic Control", "level": "core", "question": "A traffic light turns yellow as you approach the intersection and you have not yet entered it. What should you do?", "options": ["Stop if you can do so safely; if not, continue through the intersection with caution", "Speed up to clear the intersection before it turns red", "Yellow means you must stop immediately no matter what", "Yellow only applies to pedestrians, not vehicles"], "answer": 0, "explanation": "A yellow light warns that the signal is about to turn red. Drivers should stop if they can do so safely, or proceed with caution if already too close to the intersection to stop safely.", "premium": false},
+    {"id": "G1-0027", "set": 1, "set_name": "Traffic Control", "level": "core", "question": "How far before making a turn should you signal, under normal traffic conditions?", "options": ["At least 30 metres (about one block) before the turn", "Only after you begin turning the steering wheel", "Signalling is optional if no other vehicles are nearby", "Immediately as you enter the intersection"], "answer": 0, "explanation": "Drivers should signal at least 30 metres before a turn, roughly one block in the city, to give following and oncoming traffic adequate warning.", "premium": false},
+    {"id": "G1-0028", "set": 1, "set_name": "Traffic Control", "level": "important", "question": "You approach an intersection with no stop signs, yield signs, or traffic lights, at the same time as a vehicle from the opposite direction that is turning left across your path while you continue straight through. Who has the right-of-way?", "options": ["The vehicle going straight through has the right-of-way", "The vehicle turning left always goes first", "Whoever arrives at the intersection first, regardless of direction", "The larger vehicle has the right-of-way"], "answer": 0, "explanation": "A driver turning left must yield to oncoming traffic going straight through or turning right, even at an intersection with no signs or signals.", "premium": false},
+    {"id": "G1-0029", "set": 2, "set_name": "Speed & Space", "level": "core", "question": "Unless a different speed limit is posted, what is the default speed limit in cities, towns, and villages in Ontario?", "options": ["40 km/h", "50 km/h", "60 km/h", "80 km/h"], "answer": 1, "explanation": "Unless otherwise posted, the default speed limit within cities, towns, and villages in Ontario is 50 km/h.", "premium": false},
+    {"id": "G1-0030", "set": 2, "set_name": "Speed & Space", "level": "important", "question": "Is following another vehicle more closely than is reasonable and prudent for the conditions (tailgating) an offence in Ontario?", "options": ["No, as long as you don't actually collide with the vehicle ahead", "Yes, it is an offence regardless of whether a collision occurs", "Only if it happens on a highway", "Only if the other driver files a complaint"], "answer": 1, "explanation": "Following too closely for the conditions is an offence under Ontario's Highway Traffic Act, whether or not a collision results.", "premium": false},
+    {"id": "G1-0031", "set": 2, "set_name": "Speed & Space", "level": "important", "question": "Large trucks have significant blind spots, sometimes called 'no-zones,' along their sides and rear. What should you do when driving near a large truck?", "options": ["Stay close behind so the truck driver can see you in their mirror", "Avoid lingering in the truck's blind spots and keep extra following distance", "Pass only on the right-hand side", "Flash your high beams to signal the truck driver"], "answer": 1, "explanation": "Trucks have large blind spots on both sides and directly behind. Drivers should avoid lingering there and keep extra distance for better visibility and reaction time.", "premium": false},
+    {"id": "G1-0032", "set": 3, "set_name": "Alcohol & Drugs", "level": "important", "question": "For a fully licensed driver in Ontario whose blood alcohol concentration falls in the 'warn range' (0.05% to 0.08%), what is a typical immediate consequence?", "options": ["A short roadside licence suspension, starting at 3 days for a first occurrence", "No consequence unless BAC reaches 0.08%", "An automatic criminal charge, the same as over 0.08%", "A suspension only if a collision occurs"], "answer": 0, "explanation": "Drivers in the warn range (0.05%-0.08%) face escalating short-term roadside licence suspensions, starting at 3 days for a first occurrence, even though this is below the criminal 0.08% threshold.", "premium": false},
+    {"id": "G1-0033", "set": 3, "set_name": "Alcohol & Drugs", "level": "unusual", "question": "What happens if a driver refuses to provide a breath sample when lawfully demanded by police?", "options": ["Nothing; refusal has no legal consequence", "Refusal is itself a criminal offence, with penalties similar to or greater than failing the test", "Refusal only results in a verbal warning", "Refusal only matters for novice drivers"], "answer": 1, "explanation": "Refusing a lawful breath test demand is itself a criminal offence in Canada, carrying penalties comparable to or greater than those for failing the test.", "premium": false},
+    {"id": "G1-0034", "set": 4, "set_name": "Vulnerable Road Users", "level": "important", "question": "Because motorcycles are smaller and can be harder to see, what should drivers do at intersections and when changing lanes?", "options": ["Assume motorcycles are farther away than they appear and proceed as normal", "Take an extra moment to check carefully for motorcycles, which can be hidden in blind spots or against cluttered backgrounds", "Only watch for motorcycles at night", "Nothing extra; motorcycles must always yield to cars"], "answer": 1, "explanation": "Motorcycles are smaller and harder to judge distance and speed for, so drivers should take extra care checking for them at intersections, lane changes, and blind spots.", "premium": false},
+    {"id": "G1-0035", "set": 4, "set_name": "Vulnerable Road Users", "level": "important", "question": "What must a driver do when approaching a pedestrian who is carrying a white cane or being guided by a guide dog?", "options": ["Come to a complete stop and yield the right-of-way", "Sound the horn to alert them to the vehicle", "Proceed at normal speed since they cannot see the vehicle anyway", "Only slow down if the pedestrian is at a marked crosswalk"], "answer": 0, "explanation": "A white cane or guide dog indicates a pedestrian who is blind or visually impaired. Drivers must stop and yield the right-of-way.", "premium": false},
+    {"id": "G1-0036", "set": 4, "set_name": "Vulnerable Road Users", "level": "core", "question": "You see a 'Playground' or 'Children Playing' warning sign on a residential street. What should you do?", "options": ["Maintain your current speed since it is only a warning sign", "Slow down and watch carefully for children who may run into the road unexpectedly", "Only slow down if you actually see a child on the road", "Sound your horn continuously while driving through"], "answer": 1, "explanation": "These signs warn that children may be present and could dart into the road unexpectedly, so drivers should slow down and stay alert.", "premium": false},
+    {"id": "G1-0037", "set": 5, "set_name": "Parking & Stopping", "level": "core", "question": "Unless otherwise posted, how close to an intersection are you generally prohibited from parking?", "options": ["Within 1 metre", "Within 9 metres (about 30 feet) of the intersection", "Within 50 metres", "There is no restriction near intersections"], "answer": 1, "explanation": "Drivers generally may not park within 9 metres (about 30 feet) of an intersection unless signage indicates otherwise, to preserve visibility and turning space.", "premium": false},
+    {"id": "G1-0038", "set": 5, "set_name": "Parking & Stopping", "level": "unusual", "question": "What is the general difference between 'standing' and 'parking' a vehicle under Ontario rules?", "options": ["There is no difference; the terms are interchangeable", "Standing means remaining briefly with the driver present, such as to load or unload passengers, while parking means leaving the vehicle for a longer period, often unattended", "Standing only applies to buses", "Parking is always illegal; only standing is ever allowed"], "answer": 1, "explanation": "'Standing' generally refers to briefly stopping with the driver present, such as to pick up or drop off passengers, while 'parking' refers to leaving a vehicle stopped for a longer period, often unattended. Different signs and rules can apply to each.", "premium": false},
+    {"id": "G1-0039", "set": 6, "set_name": "Highway & Expressway", "level": "core", "question": "On a multi-lane highway, which lane should you normally drive in?", "options": ["The leftmost lane at all times, for higher speed", "The right-hand lane(s), moving left only to pass or when directed", "Whichever lane has less traffic, regardless of position", "The centre lane only"], "answer": 1, "explanation": "On multi-lane highways, drivers should keep to the right and use the left lane(s) mainly for passing, then return to the right.", "premium": false},
+    {"id": "G1-0040", "set": 6, "set_name": "Highway & Expressway", "level": "important", "question": "If your vehicle breaks down on a highway, what should you do?", "options": ["Stay in your travel lane with hazard lights on until help arrives", "Move as far onto the shoulder as possible, turn on your hazard lights, and if safe, exit the vehicle away from traffic", "Reverse slowly to the nearest exit", "Stand behind the vehicle to flag down help"], "answer": 1, "explanation": "Drivers should move fully onto the shoulder if possible, activate hazard lights, and consider exiting away from traffic for safety while waiting for help.", "premium": false},
+    {"id": "G1-0041", "set": 6, "set_name": "Highway & Expressway", "level": "unusual", "question": "What is required to legally drive in a High Occupancy Vehicle (HOV) lane on an Ontario highway?", "options": ["Any vehicle may use an HOV lane at any time", "The vehicle must meet the posted minimum occupancy (commonly two or more people) or qualify under a specific exemption, such as certain eligible plated vehicles", "Only commercial trucks may use HOV lanes", "HOV lanes are for public transit buses only"], "answer": 1, "explanation": "HOV lanes require vehicles to meet the posted minimum occupancy, commonly two or more people, or qualify through a specific exemption such as certain eligible plated vehicles.", "premium": false},
+    {"id": "G1-0042", "set": 7, "set_name": "Road Signs", "level": "core", "question": "Regulatory signs, such as speed limit or 'no parking' signs, are most commonly what shape?", "options": ["Diamond", "Rectangle", "Octagon", "Triangle"], "answer": 1, "explanation": "Regulatory signs, which tell drivers what they must or must not do, are typically rectangular.", "premium": false},
+    {"id": "G1-0043", "set": 7, "set_name": "Road Signs", "level": "important", "question": "What does a round, yellow sign with a black 'X' and two 'R's mean as you approach it?", "options": ["A railway crossing is ahead; slow down and prepare to stop if a train is approaching", "A highway on-ramp is ahead", "A rest area is ahead", "A roundabout is ahead"], "answer": 0, "explanation": "This is an advance railway crossing warning sign, alerting drivers to slow down and be prepared to stop for an approaching train at the crossing ahead.", "premium": false},
+    {"id": "G1-0044", "set": 8, "set_name": "Special Conditions", "level": "core", "question": "When driving in fog, which headlights should you use?", "options": ["High beams, to see as far ahead as possible", "Low beams, or fog lights if equipped, since high beams reflect off the fog and reduce visibility", "No headlights, to avoid glare", "Only parking lights"], "answer": 1, "explanation": "High beams reflect off fog particles back into the driver's eyes, reducing visibility. Low beams or fog lights direct light downward and are safer to use in fog.", "premium": false},
+    {"id": "G1-0045", "set": 8, "set_name": "Special Conditions", "level": "core", "question": "When driving through a construction zone with workers present, what is expected of drivers?", "options": ["Maintain normal highway speed since workers are responsible for their own safety", "Reduce speed as posted, watch for workers and equipment, and be prepared to change lanes or stop", "Only slow down if a police officer is directing traffic", "Construction zone rules only apply on weekdays"], "answer": 1, "explanation": "Drivers must reduce speed as posted in construction zones, watch closely for workers and equipment, and be ready to merge, stop, or follow flagger instructions.", "premium": false}
   ]
 }
