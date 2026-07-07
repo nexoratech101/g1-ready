@@ -113,10 +113,10 @@ class QuestionData {
     ),
     Question(
       id: '2_4',
-      question: 'What is the speed limit in a community safety zone?',
-      options: ['Same as posted', 'Half the posted limit', 'As posted — fines are doubled', '30 km/h always'],
-      correctIndex: 2,
-      explanation: 'In community safety zones fines for traffic violations are doubled.',
+      question: 'Where are U-turns prohibited in Ontario?',
+      options: ['Only on highways', 'Near hills, curves, or intersections with restricted visibility', 'Only in school zones', 'U-turns are always allowed'],
+      correctIndex: 1,
+      explanation: 'U-turns are prohibited wherever visibility is restricted, such as near hills, curves, or intersections, since other drivers cannot see you in time.',
       category: 'Traffic Laws',
     ),
     Question(
@@ -137,10 +137,10 @@ class QuestionData {
     ),
     Question(
       id: '2_7',
-      question: 'How close to a fire hydrant can you park?',
-      options: ['1 metre', '3 metres', '5 metres', '10 metres'],
-      correctIndex: 1,
-      explanation: 'You must not park within 3 metres of a fire hydrant to allow fire trucks access.',
+      question: 'Who is required by law to wear a seatbelt in a moving vehicle in Ontario?',
+      options: ['Only the driver', 'Only children', 'The driver and all passengers', 'Only front-seat occupants'],
+      correctIndex: 2,
+      explanation: 'Ontario law requires the driver and all passengers to wear a properly adjusted seatbelt, regardless of where they are seated.',
       category: 'Traffic Laws',
     ),
     Question(
