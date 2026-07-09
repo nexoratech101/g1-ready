@@ -2,6 +2,7 @@
 import 'package:shared_preferences/shared_preferences.dart';
 import '../theme/app_theme.dart';
 import '../services/storage_service.dart';
+import '../services/notification_service.dart';
 import '../widgets/learning_mode_picker.dart';
 
 class OnboardingScreen extends StatefulWidget {
@@ -18,10 +19,17 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   final int _totalPages = 4; // 3 info slides + 1 mode picker
 
+  Future<void> _setUpDailyTips() async {
+    await NotificationService.initialize();
+    final granted = await NotificationService.requestPermission();
+    if (granted) await NotificationService.scheduleUpcomingTips();
+  }
+
   Future<void> _finish() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('onboarding_done', true);
     await StorageService.setLearningMode(_selectedMode);
+    await _setUpDailyTips();
     if (mounted) Navigator.pushReplacementNamed(context, '/preassessment');
   }
 
@@ -29,6 +37,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('onboarding_done', true);
     await StorageService.setLearningMode(_selectedMode);
+    await _setUpDailyTips();
     if (mounted) Navigator.pushReplacementNamed(context, '/home');
   }
 

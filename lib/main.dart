@@ -4,6 +4,7 @@ import 'theme/app_theme.dart';
 import 'screens/main_screen.dart';
 import 'screens/onboarding_screen.dart';
 import 'screens/pre_assessment_screen.dart';
+import 'services/notification_service.dart';
 
 void main() {
   runApp(const G1ReadyApp());
@@ -49,7 +50,9 @@ class _SplashRouterState extends State<SplashRouter> {
     final onboardingDone = prefs.getBool('onboarding_done') ?? false;
     if (!mounted) return;
     if (onboardingDone) {
-      // Show daily fact then go home
+      // Keep the rotating daily-tip notification window fresh, then
+      // show today's fact in-app and go home.
+      NotificationService.scheduleUpcomingTips();
       _showDailyFact();
     } else {
       Navigator.pushReplacementNamed(context, '/onboarding');

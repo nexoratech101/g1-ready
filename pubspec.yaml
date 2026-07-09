@@ -22,7 +22,12 @@ dependencies:
   
   # Audio
   flutter_tts: ^4.0.2
-  
+
+  # Notifications
+  flutter_local_notifications: ^18.0.1
+  timezone: ^0.9.4
+  flutter_timezone: ^2.0.1
+
   # UI
   flutter_svg: ^2.0.10+1
   lottie: ^3.1.2
