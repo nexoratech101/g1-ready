@@ -17,7 +17,7 @@ class NotificationService {
     if (_initialized) return;
     tz_data.initializeTimeZones();
     final deviceTimeZone = await FlutterTimezone.getLocalTimezone();
-    tz.setLocalLocation(tz.getLocation(deviceTimeZone));
+    tz.setLocalLocation(tz.getLocation(deviceTimeZone.identifier));
 
     const androidInit = AndroidInitializationSettings('@mipmap/ic_launcher');
     const initSettings = InitializationSettings(android: androidInit);
